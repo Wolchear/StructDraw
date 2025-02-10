@@ -19,5 +19,5 @@ def read_file(pdb_file_path: str, pdb_file_type: str):
 		pdb_file = pdb.PDBFile.read(pdb_file_path)
 		return pdb_file.get_structure()
 	else:
-		cif_file = pdbx.CIFFile.read(pdb_file_path)
-		return cif_file
+		pdbx_file = pdbx.CIFFile.read(pdb_file_path)
+		return pdbx.get_structure(pdbx_file, model=1)
