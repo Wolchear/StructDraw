@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-
 import argparse
 
 from struct_draw.dssp.dssp import DSSP
 from struct_draw.io import file_reader as fr
+from struct_draw.visualization.text_display import generate_dssp_text
+
 
 def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
-	if pdb_file_type is None:
-		pdb_file_type = fr.identify_file_type(pdb_file_path)
+	#if pdb_file_type is None:
+	#	pdb_file_type = fr.identify_file_type(pdb_file_path)
 	
-	structure = fr.read_file(pdb_file_path, pdb_file_type)
+	#structure = fr.read_file(pdb_file_path, pdb_file_type)
 	
 	dssp = DSSP(pdb_file_path)
-	print(dssp.np_data)
-	
+	chain_A = dssp.get_chain('A')
+	print(generate_dssp_text(chain_A))
 
 
 if __name__ == '__main__':      
