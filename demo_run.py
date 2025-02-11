@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys
-import os
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, project_root)
+from struct_draw.dssp.dssp import DSSP
+from struct_draw.io import file_reader as fr
 
-from StructDraw import run_struct_draw
+def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
+	if pdb_file_type is None:
+		pdb_file_type = fr.identify_file_type(pdb_file_path)
+	
+	structure = fr.read_file(pdb_file_path, pdb_file_type)
+	
+	dssp = DSSP(pdb_file_path)
+	print(dssp.np_data)
+	
+
 
 if __name__ == '__main__':      
 	parser = argparse.ArgumentParser(description="None", formatter_class=argparse.RawTextHelpFormatter)
@@ -29,5 +36,3 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	
 	run_struct_draw(args.pdb, args.pdb_type)
-	
-	
