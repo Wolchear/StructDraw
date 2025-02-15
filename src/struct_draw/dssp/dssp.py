@@ -4,13 +4,13 @@ import re
 import numpy as np
 
 class DSSP:
-	def __init__(self, pdb_file: str):
+	def __init__(self, pdb_file: str, dssp: str = 'mkdssp'):
 		self.pdb_file = pdb_file
-		self.dssp_out = self.run_dssp(pdb_file)
+		self.dssp_out = self.run_dssp(pdb_file, dssp)
 		self.dssp_data = self.get_dssp_data(self.dssp_out)
 			
-	def run_dssp(self, pdb_file: str) -> str:
-		DSSP_cmd = ["dssp", "--output-format=dssp", pdb_file]
+	def run_dssp(self, pdb_file: str, dssp: str = 'mkdssp') -> str:
+		DSSP_cmd = [dssp, "--output-format=dssp", pdb_file]
 		p = subprocess.Popen(
 			DSSP_cmd,
 			universal_newlines=True,
@@ -18,7 +18,7 @@ class DSSP:
 			stderr=subprocess.PIPE,
 			)
 		out, err = p.communicate()
-		
+	
 		return out
 		
 	def get_dssp_data(self, dssp_out: str) -> np.ndarray:

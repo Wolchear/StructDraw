@@ -3,7 +3,7 @@ import argparse
 
 from struct_draw.dssp.dssp import DSSP
 from struct_draw.io import file_reader as fr
-from struct_draw.visualization.text_display import generate_dssp_text
+from struct_draw.visualization.visualisation import generate_dssp_text, generate_dssp_image
 
 
 def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
@@ -12,9 +12,9 @@ def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
 	
 	#structure = fr.read_file(pdb_file_path, pdb_file_type)
 	
-	dssp = DSSP(pdb_file_path)
-	chain_A = dssp.get_chain('A')
-	print(generate_dssp_text(chain_A))
+	dssp_model = DSSP(pdb_file_path)
+	chain_A = dssp_model.get_chain('A')
+	generate_dssp_image(chain_A)
 
 
 if __name__ == '__main__':      
