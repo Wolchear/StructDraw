@@ -13,7 +13,7 @@ def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
 	#structure = fr.read_file(pdb_file_path, pdb_file_type)
 	
 	dssp_model = DSSP(pdb_file_path)
-	chain_A = dssp_model.get_chain('A')
+	chain_A = dssp_model.get_chain('B')
 	generate_dssp_image(chain_A)
 
 
