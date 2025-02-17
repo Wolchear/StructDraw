@@ -1,1 +1,1 @@
-from .dssp import DSSP
+from .dssp import *
