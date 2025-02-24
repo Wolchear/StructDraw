@@ -33,7 +33,7 @@ class Model(ABC):
         pass
     
     @abstractmethod
-    def get_chain(self, chain_id: str):
+    def get_chain_data(self, chain_id: str):
         pass
     
     @abstractmethod
@@ -58,7 +58,7 @@ class PDBx(Model):
         pdbx_file = pdbx.CIFFile.read(self._pdb_file) 
         return pdbx.get_structure(pdbx_file, model=1)
         
-    def get_chain(self, chain_id: str):
+    def get_chain_data(self, chain_id: str):
         if chain_id not in self.__unique_chains:
             raise ValueError(f"File do not contains chain: {chain_id}'")
         return self.__chains[chain_id]
@@ -85,7 +85,7 @@ class PDB(Model):
         pdb_file = pdb.PDBFile.read(self._pdb_file)
         return pdb_file.get_structure()
     
-    def get_chain(self, chain_id: str):
+    def get_chain_data(self, chain_id: str):
         if chain_id not in self.__unique_chains:
             raise ValueError(f"File do not contains chain: {chain_id}'")
         return self.__chains[chain_id]
