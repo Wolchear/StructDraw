@@ -2,11 +2,11 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 class Chain:
-    def __init__(self, chain_data: np.ndarray, color_structures: str):
+    def __init__(self, chain_data: np.ndarray, color_structures: str, shape_size: int):
         self.__chain_data = chain_data
         self.__residues_quantity = len(chain_data)
         self.__color_structures = color_structures
-        self.__shape_size = 10
+        self.__shape_size = shape_size
         self.__width = self.__residues_quantity * self.__shape_size + 2 * self.__shape_size
         self.__heigth = 2 * self.__shape_size
         self.__shapes_storage = self._generate_shapes()
@@ -36,7 +36,7 @@ class Chain:
             font = ImageFont.load_default()
             x0 = index * self.__shape_size + self.__shape_size * 0.5
             y0 = self.__shape_size * 0.5
-            shape_storage[index] = Shape(10, 10, residue_index, insertion_code,
+            shape_storage[index] = Shape(self.__shape_size, self.__shape_size, residue_index, insertion_code,
                                                  fillcolor, aa, ss, x0, y0, font, 14)
          
         return shape_storage

@@ -1,1 +1,2 @@
-from .visualisation import *
+from .canvas import *
+from .shapes import *

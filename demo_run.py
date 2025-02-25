@@ -2,14 +2,21 @@
 import argparse
 
 from struct_draw.structures.pdb_model import PDB
-from struct_draw.visualization.visualisation import  generate_chain_image, generate_file_image
+from struct_draw.visualization.canvas import Canvas
+from struct_draw.visualization.shapes import Chain
 
 def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
     pdb = PDB(pdb_file_path)
     chain_A = pdb.get_chain_data('A')
     chain_B = pdb.get_chain_data('B')
-    fig = generate_file_image(pdb, 10, 10)
-    fig.show()
+    canvas = Canvas('white')
+    canvas.add_chain(Chain(chain_A, 'struct', shape_size=10))
+    canvas.add_chain(Chain(chain_B, 'struct', shape_size=10))
+    canvas.add_title('DejaVuSans.ttf', 12, 'Test Title', 'centered')
+    #canvas.add_chain(Chain(chain_B, 'struct', 15))
+    #canvas.add_chain(Chain(chain_B, 'struct', 20))
+    img = canvas.get_image()
+    img.show()
 
 if __name__ == '__main__':      
     parser = argparse.ArgumentParser(description="None",
