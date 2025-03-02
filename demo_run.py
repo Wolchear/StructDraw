@@ -12,7 +12,7 @@ def run_struct_draw(pdb_file_path: str, pdb_file_type: str = None) -> None:
     canvas = Canvas('white')
     canvas.add_chain(Chain(chain_A, 'struct', shape_size=10))
     canvas.add_chain(Chain(chain_B, 'struct', shape_size=10))
-    canvas.add_title('DejaVuSans.ttf', 12, 'Test Title', 'centered')
+    canvas.add_title('DejaVuSans.ttf', 50, 'Test Title', 'left')
     #canvas.add_chain(Chain(chain_B, 'struct', 15))
     #canvas.add_chain(Chain(chain_B, 'struct', 20))
     img = canvas.get_image()

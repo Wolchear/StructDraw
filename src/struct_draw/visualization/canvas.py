@@ -63,16 +63,20 @@ class _Title:
         self.__font_size = font_size
         self.__font = ImageFont.truetype(font, self.__font_size)
         self.__text = text
+        self.__text_length = len(self.__text)
         self.__height = int(self.__font_size + self.__font_size * 0.5)
         self.__width = None
         self.__text_x_offsets = {'centered': 0.5, 'right': 0.1, 'left': 0.9}
         self.__text_x_offset_multiplier = self.__text_x_offsets.get(text_position, 0.25)
-        self.__text_y0 = self.__height * 0.5
+        self.__text_y0 = self.__height * 0.5 - 0.5 * self.__font_size
         self.__text_x0 = None
         
     def _set_width_x0(self, image_width: int) -> None:
     	self.__width = image_width
-    	self.__text_x0 = image_width * self.__text_x_offset_multiplier
+    	self.__text_x0 = ( image_width
+    	                * self.__text_x_offset_multiplier
+    	                - self.__font_size
+    	                * 0.3 * self.__text_length )
     	
     def _get_height(self) -> int:
         return self.__height
