@@ -46,7 +46,7 @@ class Canvas:
         previous_chain_end = self.__title_ends
         for chain in chains_storage:
             for shape in chain.get_shapes():
-                shape_tuple, font_tuple, info_tuple = shape.get_shape_params()
+                shape_tuple, info_tuple = shape.get_shape_params()
                 cords = shape_tuple[0]
                 cords[1] += previous_chain_end
                 cords[3] += previous_chain_end
