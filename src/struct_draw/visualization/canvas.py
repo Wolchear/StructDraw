@@ -46,14 +46,8 @@ class Canvas:
         previous_chain_end = self.__title_ends
         for chain in chains_storage:
             for shape in chain.get_shapes():
-                shape_tuple, info_tuple = shape.get_shape_params()
-                cords = shape_tuple[0]
-                cords[1] += previous_chain_end
-                cords[3] += previous_chain_end
-                color = shape_tuple[1]
-                outline = shape_tuple[2]
-                draw.rectangle(cords, fill=color, outline=outline)
-            previous_chain_end += chain.get_heigth()
+                shape.draw_shape(draw_context=draw, offset=previous_chain_end)
+            previous_chain_end += chain.get_height()
         return image   
         
             
@@ -101,7 +95,7 @@ class _DrawArea:
         if current_chain_width > self.__width:
             self.__width = current_chain_width
         
-        current_chain_height = chain.get_heigth()
+        current_chain_height = chain.get_height()
         self.__height += current_chain_height
         self.__chains_storage.append(chain)
     
