@@ -9,6 +9,7 @@ class Model(ABC):
     def __init__(self, pdb_file: str):
         self._pdb_file = pdb_file
         self._file_type = Model.identify_file_type(pdb_file)
+        self._chains = {}
     
     @staticmethod
     def validate_file_type(pdb_file: str, expected: str) -> None:
@@ -50,9 +51,9 @@ class PDBx(Model):
         dssp_data = get_dssp_data(dssp_out)
         
         self.__unique_chains = np.unique(dssp_data['chain_id'])
-        self.__chains = {}
+       
         for chain_id in self.__unique_chains:
-             self.__chains[chain_id] = dssp_data[dssp_data['chain_id'] == chain_id]
+             self._chains[chain_id] = dssp_data[dssp_data['chain_id'] == chain_id]
         
     def read_file(self):
         pdbx_file = pdbx.CIFFile.read(self._pdb_file) 
@@ -61,10 +62,10 @@ class PDBx(Model):
     def get_chain_data(self, chain_id: str):
         if chain_id not in self.__unique_chains:
             raise ValueError(f"File do not contains chain: {chain_id}'")
-        return self.__chains[chain_id]
+        return self._chains[chain_id]
           
     def get_chain_list(self):
-        return self.__chains
+        return self._chains
         
         
 class PDB(Model):   
@@ -76,9 +77,9 @@ class PDB(Model):
         dssp_data = get_dssp_data(dssp_out)
         
         self.__unique_chains = np.unique(dssp_data['chain_id'])
-        self.__chains = {}
+        
         for chain_id in self.__unique_chains:
-             self.__chains[chain_id] = dssp_data[dssp_data['chain_id'] == chain_id]
+             self._chains[chain_id] = dssp_data[dssp_data['chain_id'] == chain_id]
         
     
     def read_file(self):
@@ -88,10 +89,10 @@ class PDB(Model):
     def get_chain_data(self, chain_id: str):
         if chain_id not in self.__unique_chains:
             raise ValueError(f"File do not contains chain: {chain_id}'")
-        return self.__chains[chain_id]
+        return self._chains[chain_id]
         
     def get_chain_list(self):
-        return self.__chains
+        return self._chains
         
 if __name__ == '__main__':
    #pdb = PDB('../../../tests/1ad0.pdb')

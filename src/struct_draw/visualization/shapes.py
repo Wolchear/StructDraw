@@ -1,5 +1,6 @@
 import numpy as np
 
+from typing import Optional
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from PIL import Image, ImageDraw, ImageFont
@@ -46,11 +47,10 @@ class Chain:
             insertion_code = row['insertion_code']
             structure_class = structure_classes.get(ss, Other)
             fillcolor = structure_colors[structure_class.__name__]
-            inner_padding = self.__shape_size * 0.5
-            x0 = (index - x_split_offset) * self.__shape_size +  2 * inner_padding
+            inner_padding = self.__shape_size
+            x0 = (index - x_split_offset) * self.__shape_size +  inner_padding
             y0 = split_level * self.__shape_size + inner_padding
-            shape_storage[index] = structure_class(self.__shape_size, residue_index,
-                                         insertion_code, fillcolor, aa, ss, x0, y0)
+            shape_storage[index] = structure_class(self.__shape_size, fillcolor, x0, y0)
          
         return shape_storage
                                                  
@@ -66,11 +66,7 @@ class Chain:
 @dataclass
 class BaseShape(ABC):
     _size: int
-    _residue_index: int
-    _insertion_code: str
     _color: str
-    _amino_acid: str
-    _secondary_structure: str
     _x_0: int
     _y_0: int
     _x_1: int = field(init=False)
@@ -90,13 +86,7 @@ class Other(BaseShape):
         draw_context.rectangle([self._x_0, self._y_0 + offset,
                                 self._x_1, self._y_1 + offset],
                                 fill=self._color, outline='black')
-        
-@dataclass
-class AnotationLable(BaseShape):
-    def draw_shape(self, draw_context: ImageDraw.ImageDraw, offset: int) -> None:
-        pass
-
-
+     
 @dataclass
 class Helix(BaseShape):
     def draw_shape(self, draw_context: ImageDraw.ImageDraw, offset: int) -> None:
@@ -110,3 +100,29 @@ class Strand(BaseShape):
         draw_context.ellipse([self._x_0, self._y_0 + offset,
                               self._x_1, self._y_1 + offset],
                               fill=self._color, outline='black')
+                              
+        
+@dataclass
+class RegularLabel():
+    _x_0: int
+    _y_0: int
+    _text: str
+    _font_size: int
+    _font: str
+    
+    def __post_init__(self):
+        self._font_obj = ImageFont.truetype(self._font, self._font_size)
+    
+    def draw_label(self, draw_context: ImageDraw.ImageDraw) -> None:
+        draw_context.text([self._x_0, self._y_0], self._text, font=self._font_obj, fill=(0, 0, 0))          
+
+                  
+@dataclass
+class AnotationLabel(RegularLabel):
+    __residue_index: int 
+    __insertion_code: str
+    __amino_acid: str
+    __secondary_structure: str
+    
+    def draw_label(self, draw_context: ImageDraw.ImageDraw) -> None:
+        draw_context.text([self._x_0, self._y_0], self._text, font=self._font_obj, fill=(0, 0, 0))                             
