@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from PIL import Image, ImageDraw, ImageFont
-from .shapes import RegularLabel
+from .shapes import RegularLabel, Chain
 
 class Canvas:
     def __init__(self, background_color: str):
@@ -12,8 +12,8 @@ class Canvas:
         self.__width = 0
         self.__title_ends = 0
         	
-    def add_chain(self, chain: 'Chain') -> None:
-        self.__draw_area_obj.add_chain(chain)
+    def add_chain(self, chain: 'Chain', shape_size: int, split:int = None) -> None:
+        self.__draw_area_obj.add_chain(chain, shape_size, split)
         
     def add_title(self, font:str, font_size:int, text:str, text_position:str) -> None:
         self.__title_obj = _Title(font, font_size, text, text_position)
@@ -45,8 +45,7 @@ class Canvas:
         chains_storage = draw_area.get_chains_storage()
         previous_chain_end = self.__title_ends
         for chain in chains_storage:
-            for shape in chain.get_shapes():
-                shape.draw_shape(draw_context=draw_context, offset=previous_chain_end)
+            chain.draw_chain(draw_context, previous_chain_end)
             previous_chain_end += chain.get_height()
             
         return image   
@@ -89,7 +88,7 @@ class _Title(_BaseCanvasComponent):
         label = RegularLabel(self.__text_x0, self.__text_y0,
                              self.__text, self.__font_size,
                              self.__font)
-        label.draw_label(draw_context)
+        label.draw_label(draw_context, 0)
     
     def _count_x0(self) -> None:
     	self.__text_x0 = int( self._width
@@ -108,14 +107,15 @@ class _DrawArea(_BaseCanvasComponent):
         super().__init__()
         self.__chains_storage = []
         
-    def add_chain(self, chain: 'Chain') -> None:
-        current_chain_width = chain.get_width()
-        if current_chain_width > self._width:
-            self._width = current_chain_width
+    def add_chain(self, chain: 'Chain', shape_size, split=None) -> None:
+        new_chain = Chain(chain, 'struct', shape_size, split)
+        new_chain_width = new_chain.get_width()
+        if new_chain_width > self._width:
+            self._width = new_chain_width
         
-        current_chain_height = chain.get_height()
-        self._height += current_chain_height
-        self.__chains_storage.append(chain)
+        new_chain_height = new_chain.get_height()
+        self._height += new_chain_height
+        self.__chains_storage.append(new_chain)
     
     def get_chains_storage(self) -> list:
         return self.__chains_storage

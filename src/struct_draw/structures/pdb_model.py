@@ -2,18 +2,22 @@ import biotite.structure.io.pdb as pdb
 import biotite.structure.io.pdbx as pdbx
 import numpy as np
 
+from dataclasses import dataclass
+from numpy.typing import NDArray
 from abc import ABC, abstractmethod
 from struct_draw.dssp.dssp import run_dssp, get_dssp_data
 
-class Model(ABC):
+class BaseModel(ABC):
     def __init__(self, pdb_file: str):
         self._pdb_file = pdb_file
-        self._file_type = Model.identify_file_type(pdb_file)
+        self._file_type = BaseModel.identify_file_type(pdb_file)
         self._chains = {}
-    
+        self._unique_chains = None
+        self._dssp_out = None
+        
     @staticmethod
     def validate_file_type(pdb_file: str, expected: str) -> None:
-        actual = Model.identify_file_type(pdb_file)
+        actual = BaseModel.identify_file_type(pdb_file)
         if actual != expected:
             raise ValueError(f"File type mismatch: expected '{expected}', got '{actual}'")
     
@@ -29,71 +33,51 @@ class Model(ABC):
         except OSError as e:
             raise OSError(f"Cannot read file ({pdb_file}): {e}")
     
-    @abstractmethod
-    def read_file(self):
-        pass
     
-    @abstractmethod
-    def get_chain_data(self, chain_id: str):
-        pass
+    def get_chain(self, chain_id: str):
+        if chain_id not in self._unique_chains:
+            raise ValueError(f"File do not contains chain: {chain_id}'")
+        return self._chains[chain_id]
     
-    @abstractmethod
     def get_chain_list(self):
-        pass
+        return self._chains
         
+    def run_dssp(self):
+        self._dssp_out = run_dssp(self._pdb_file)
+        dssp_data = get_dssp_data(self._dssp_out)
+        self._unique_chains = np.unique(dssp_data['chain_id'])
+        for chain_id in self._unique_chains:
+            chain_data = dssp_data[dssp_data['chain_id'] == chain_id]
+            self._chains[chain_id] = Chain(chain_id, 'mkdssp', self._pdb_file,
+                                           chain_data['residue_index'],
+                                           chain_data['insertion_code'],
+                                           chain_data['AA'],
+                                           chain_data['SS'])
 
-class PDBx(Model):
+class PDBx(BaseModel):
     def __init__(self, pdb_file: str):
         super().__init__(pdb_file)
-        Model.validate_file_type(self._pdb_file, 'pdbx')
+        BaseModel.validate_file_type(self._pdb_file, 'pdbx')
+        self.run_dssp()
+
         
-       	dssp_out = run_dssp(self._pdb_file)
-        dssp_data = get_dssp_data(dssp_out)
-        
-        self.__unique_chains = np.unique(dssp_data['chain_id'])
-       
-        for chain_id in self.__unique_chains:
-             self._chains[chain_id] = dssp_data[dssp_data['chain_id'] == chain_id]
-        
-    def read_file(self):
-        pdbx_file = pdbx.CIFFile.read(self._pdb_file) 
-        return pdbx.get_structure(pdbx_file, model=1)
-        
-    def get_chain_data(self, chain_id: str):
-        if chain_id not in self.__unique_chains:
-            raise ValueError(f"File do not contains chain: {chain_id}'")
-        return self._chains[chain_id]
-          
-    def get_chain_list(self):
-        return self._chains
-        
-        
-class PDB(Model):   
+class PDB(BaseModel):   
     def __init__(self, pdb_file: str):
         super().__init__(pdb_file)
-        Model.validate_file_type(self._pdb_file, 'pdb')
+        BaseModel.validate_file_type(self._pdb_file, 'pdb')
+        self.run_dssp()
         
-        dssp_out = run_dssp(self._pdb_file)
-        dssp_data = get_dssp_data(dssp_out)
         
-        self.__unique_chains = np.unique(dssp_data['chain_id'])
-        
-        for chain_id in self.__unique_chains:
-             self._chains[chain_id] = dssp_data[dssp_data['chain_id'] == chain_id]
-        
+@dataclass     
+class Chain:
+    chain_id: str
+    ss_algorithm: str
+    model_id: str
+    residue_index: NDArray[np.int_]
+    insertion_code: NDArray[np.str_]
+    residues: NDArray[np.str_]
+    secondary_structure: NDArray[np.str_]
     
-    def read_file(self):
-        pdb_file = pdb.PDBFile.read(self._pdb_file)
-        return pdb_file.get_structure()
-    
-    def get_chain_data(self, chain_id: str):
-        if chain_id not in self.__unique_chains:
-            raise ValueError(f"File do not contains chain: {chain_id}'")
-        return self._chains[chain_id]
-        
-    def get_chain_list(self):
-        return self._chains
-        
 if __name__ == '__main__':
    #pdb = PDB('../../../tests/1ad0.pdb')
     pdbx = PDBx('../../../tests/1ad0.cif')
