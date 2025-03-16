@@ -2,7 +2,7 @@ import biotite.structure.io.pdb as pdb
 import biotite.structure.io.pdbx as pdbx
 import numpy as np
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from numpy.typing import NDArray
 from abc import ABC, abstractmethod
 from struct_draw.dssp.dssp import run_dssp, get_dssp_data
@@ -48,11 +48,9 @@ class BaseModel(ABC):
         self._unique_chains = np.unique(dssp_data['chain_id'])
         for chain_id in self._unique_chains:
             chain_data = dssp_data[dssp_data['chain_id'] == chain_id]
-            self._chains[chain_id] = Chain(chain_id, 'mkdssp', self._pdb_file,
-                                           chain_data['residue_index'],
-                                           chain_data['insertion_code'],
-                                           chain_data['AA'],
-                                           chain_data['SS'])
+            self._chains[chain_id] = Chain(chain_id, 'mkdssp',
+                                           self._pdb_file,
+                                           chain_data)
 
 class PDBx(BaseModel):
     def __init__(self, pdb_file: str):
@@ -73,11 +71,20 @@ class Chain:
     chain_id: str
     ss_algorithm: str
     model_id: str
-    residue_index: NDArray[np.int_]
-    insertion_code: NDArray[np.str_]
-    residues: NDArray[np.str_]
-    secondary_structure: NDArray[np.str_]
+    dssp_data: np.ndarray = field(repr=False)
+    residues: np.ndarray = field(init=False)
     
-if __name__ == '__main__':
-   #pdb = PDB('../../../tests/1ad0.pdb')
-    pdbx = PDBx('../../../tests/1ad0.cif')
+    def __post_init__(self):
+        self.residues = np.empty(len(self.dssp_data), dtype=object)
+        for index, row in enumerate(self.dssp_data):
+            self.residues[index] = Residue(index=row['residue_index'],
+                                           insertion_code=row['insertion_code'],
+                                           amino_acid=row['AA'],
+                                           secondary_structure=row['SS'])
+    	
+@dataclass
+class Residue:
+	index: int
+	insertion_code: str
+	amino_acid: str
+	secondary_structure: str
