@@ -75,3 +75,14 @@ class Strand(BaseShape):
         draw_context.ellipse([x_0, y_0 + offset, x_1, y_1 + offset],
                                    fill=self._color, outline='black')
         self.draw_annotation_labels(x_0, y_1, draw_context, offset)
+        
+        
+@dataclass
+class Gap(BaseShape):
+    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
+        x_1 = x_0 + self._size
+        y_1 = y_0 + self._size
+        y_0 = y_0 + 0.5 * self._size
+        draw_context.line([x_0, y_0 + offset, x_1, y_0 + offset],
+                                   		fill=self._color)
+        self.draw_annotation_labels(x_0, y_1, draw_context, offset)

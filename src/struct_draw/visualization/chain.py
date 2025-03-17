@@ -4,7 +4,7 @@ from typing import Optional, Dict
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from PIL import Image, ImageDraw, ImageFont
-from .chain_components.shape import Other, Helix, Strand
+from .chain_components.shape import Other, Helix, Strand, Gap
 from .chain_components.label import RegularLabel
 
 
@@ -54,11 +54,13 @@ class Chain:
         shape_storage = np.empty(self.__residues_quantity, dtype=object)
         
         structure_classes = {'H': Helix, 'I': Helix, 'G': Helix, 'P': Helix,
-                             'B': Strand, 'E': Strand, 'T': Other, 'S': Other}
+                             'B': Strand, 'E': Strand, 'T': Other, 'S': Other,
+                             'gap': Gap}
                       
         structure_colors = {'Helix': 'green',
                             'Strand': 'blue',
-                            'Other': 'white'}
+                            'Other': 'white',
+                            'Gap': 'black'}
                     
         for index, residue in enumerate(self.__chain.residues):      
             ss = residue.secondary_structure
