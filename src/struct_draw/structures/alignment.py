@@ -39,8 +39,6 @@ class Alignment:
         for model_id, chains in models.items():
             pdb_file = self._data_dir + '/' +model_id
             chains_list = [chain_id for d in chains for chain_id in d.keys()]
-            print('Model: ', model_id)
-            print('Chains: ', chains_list)
             new_model = PDB(pdb_file, chains_list)
             for chain_dict in chains:
                 for chain_id, sequence in chain_dict.items():

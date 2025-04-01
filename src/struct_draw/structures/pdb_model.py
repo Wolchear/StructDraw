@@ -11,29 +11,10 @@ from struct_draw.dssp.dssp import run_dssp, get_dssp_data
 class BaseModel(ABC):
     def __init__(self, pdb_file: str, include_chains: Optional[list] = 'ALL'):
         self._pdb_file = pdb_file
-        self._file_type = BaseModel.identify_file_type(pdb_file)
         self._chains = {}
         self._unique_chains = None
         self._dssp_out = None
         self._include_chains = include_chains
-        
-    @staticmethod
-    def validate_file_type(pdb_file: str, expected: str) -> None:
-        actual = BaseModel.identify_file_type(pdb_file)
-        if actual != expected:
-            raise ValueError(f"File type mismatch: expected '{expected}', got '{actual}'")
-    
-    @staticmethod
-    def identify_file_type(pdb_file: str) -> str:
-        try:
-            with open( pdb_file, 'r') as file:
-                for line in file:
-                    if '_data' in line:
-                        return 'pdbx'
-            return 'pdb'
-			
-        except OSError as e:
-            raise OSError(f"Cannot read file ({pdb_file}): {e}")
     
     
     def get_chain(self, chain_id: str):
@@ -59,14 +40,12 @@ class BaseModel(ABC):
 class PDBx(BaseModel):
     def __init__(self, pdb_file: str, include_chains: Optional[list] = 'ALL'):
         super().__init__(pdb_file, include_chains)
-        BaseModel.validate_file_type(self._pdb_file, 'pdbx')
         self.run_dssp()
 
         
 class PDB(BaseModel):   
     def __init__(self, pdb_file: str, include_chains: Optional[list] = 'ALL'):
         super().__init__(pdb_file, include_chains)
-        BaseModel.validate_file_type(self._pdb_file, 'pdb')
         self.run_dssp()
         
         
@@ -79,30 +58,27 @@ class Chain:
     residues: np.ndarray = field(init=False)
     
     def __post_init__(self):
-        self.residues = np.empty(len(self.dssp_data), dtype=object)
-        for index, row in enumerate(self.dssp_data):
-            self.residues[index] = Residue(index=row['residue_index'],
-                                           insertion_code=row['insertion_code'],
-                                           amino_acid=row['AA'],
-                                           secondary_structure=row['SS'])
+        self.residues = np.array([
+        Residue(index=row['residue_index'],
+                insertion_code=row['insertion_code'],
+                amino_acid=row['AA'],
+                secondary_structure=row['SS'])
+        for row in self.dssp_data], dtype=object)
                                            
     def align_seq(self, aligned_seq: str) -> None:
-        new_residues =  np.empty(len(aligned_seq), dtype=object)
-        rsidues_index = 0
-        for index, char in enumerate(aligned_seq):
+        new_residues = []
+        residues_index = 0
+        for char in aligned_seq:
             if char != '-':
-                new_residues[index] = self.residues[rsidues_index]
-                rsidues_index +=1
-                continue
-            new_residues[index] = Residue(index='-',
-                                          insertion_code='-',
-                                          amino_acid='_',
-                                          secondary_structure='gap')
-         
-        self.residues = new_residues
+                new_residues.append(self.residues[residues_index])
+                residues_index += 1
+            else:
+                new_residues.append(Residue(index='-',
+                                            insertion_code='-',
+                                            amino_acid='_',
+                                            secondary_structure='gap'))
+        self.residues = np.array(new_residues, dtype=object)
             
-            
-    	
 @dataclass
 class Residue:
 	index: int

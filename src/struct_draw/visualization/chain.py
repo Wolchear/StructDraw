@@ -91,6 +91,6 @@ class Chain:
     def get_shapes(self):
         return self.__shapes_storage
     
-    def draw_chain(self, draw_context, offset: int) -> None:
+    def draw(self, draw_context, offset: int) -> None:
         self.__chain_label.draw(0, 0, draw_context=draw_context, offset=offset)
         self._draw_shapes(0, 0, draw_context=draw_context, offset=offset)        
