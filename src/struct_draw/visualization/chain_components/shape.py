@@ -41,66 +41,64 @@ class BaseShape(ABC):
         pass
         
     
-    def draw_annotation_labels(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
+    def draw_annotation_labels(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         for label in self._annotation_labels:
-            label.draw(x_0, y_0, draw_context, offset)
-            offset += label.height
+            label.draw(x_0, y_0, draw_context)
+            y_0 += label.height
             
 @dataclass        
 class Other(BaseShape):    
-    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
+    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         x_1 = x_0 + self._size
         y_1 = y_0 + self._size
         #print('Other:', x_0, y_0)
-        draw_context.rectangle([x_0, y_0 + offset, x_1, y_1 + offset],
+        draw_context.rectangle([x_0, y_0 , x_1, y_1],
                                     fill=self._color, outline='black')
-        self.draw_annotation_labels(x_0, y_1, draw_context, offset)
+        self.draw_annotation_labels(x_0, y_1, draw_context)
      
 @dataclass
 class Helix(BaseShape):
-    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
-        fixed_y_0 = y_0 + offset
+    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         x_1 = x_0 + self._size
-        y_1 = fixed_y_0 + self._size
+        y_1 = y_0 + self._size
         
-        points = [(x_0, fixed_y_0 + int(self._size * 0.4)),                         #A
-                  (x_0 + int(self._size * 0.1), fixed_y_0 +int(self._size * 0.4)),  #B
-                  (x_0 + int(self._size * 0.05), fixed_y_0),                         #C
-                  (x_0 + int(self._size * 0.4), fixed_y_0),                         #D
-                  (x_0 + int(self._size * 0.5), fixed_y_0 + int(self._size * 0.4)), #E
-                  (x_0 + int(self._size * 0.6), fixed_y_0),                         #F
-                  (x_0 + int(self._size * 0.8), fixed_y_0),                         #G
-                  (x_0 + int(self._size * 0.9), fixed_y_0 + int(self._size * 0.4)), #H
-                  (x_0 + int(self._size), fixed_y_0 + int(self._size * 0.4)),       #I
-                  (x_0 + int(self._size), fixed_y_0 + int(self._size * 0.6)),       #J
-                  (x_0 + int(self._size * 0.8), fixed_y_0 + int(self._size * 0.6)), #K
-                  (x_0 + int(self._size * 0.75), fixed_y_0 + int(self._size * 0.6)), #L
+        points = [(x_0, y_0 + int(self._size * 0.4)),                         #A
+                  (x_0 + int(self._size * 0.1), y_0 +int(self._size * 0.4)),  #B
+                  (x_0 + int(self._size * 0.05), y_0),                        #C
+                  (x_0 + int(self._size * 0.4), y_0),                         #D
+                  (x_0 + int(self._size * 0.5), y_0 + int(self._size * 0.4)), #E
+                  (x_0 + int(self._size * 0.6), y_0),                         #F
+                  (x_0 + int(self._size * 0.8), y_0),                         #G
+                  (x_0 + int(self._size * 0.9), y_0 + int(self._size * 0.4)), #H
+                  (x_0 + int(self._size), y_0 + int(self._size * 0.4)),       #I
+                  (x_0 + int(self._size), y_0 + int(self._size * 0.6)),       #J
+                  (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.6)), #K
+                  (x_0 + int(self._size * 0.75), y_0 + int(self._size * 0.6)),#L
                   (x_0 + int(self._size * 0.6), y_1),                               #M
                   (x_0 + int(self._size * 0.4), y_1),                               #N
-                  (x_0 + int(self._size * 0.25), fixed_y_0 + int(self._size * 0.6)), #O
-                  (x_0, fixed_y_0 + int(self._size * 0.6))]                         #R
+                  (x_0 + int(self._size * 0.25), y_0 + int(self._size * 0.6)),#O
+                  (x_0, y_0 + int(self._size * 0.6))]                         #R
                   
         draw_context.polygon(points, outline="black", fill=self._color)
-        self.draw_annotation_labels(x_0, y_0 + self._size, draw_context, offset)
+        self.draw_annotation_labels(x_0, y_0 + self._size, draw_context)
 
 @dataclass
 class Strand(BaseShape):
-    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
+    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         x_1 = x_0 + self._size
         y_1 = y_0 + self._size
-        #print('Strand:', x_0, y_0)
-        draw_context.ellipse([x_0, y_0 + offset, x_1, y_1 + offset],
+        draw_context.ellipse([x_0, y_0 , x_1, y_1],
                                    fill=self._color, outline='black')
-        self.draw_annotation_labels(x_0, y_1, draw_context, offset)
+        self.draw_annotation_labels(x_0, y_1, draw_context)
         
         
 @dataclass
 class Gap(BaseShape):
-    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
+    def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         x_1 = x_0 + self._size
         y_1 = y_0 + self._size
         y_0 = y_0 + 0.5 * self._size
         margin = self._size * 0.1
-        draw_context.line([x_0 + margin, y_0 + offset, x_1 - margin, y_0 + offset],
+        draw_context.line([x_0 + margin, y_0, x_1 - margin, y_0],
                                    		fill=self._color)
-        self.draw_annotation_labels(x_0, y_1, draw_context, offset)
+        self.draw_annotation_labels(x_0, y_1, draw_context)
