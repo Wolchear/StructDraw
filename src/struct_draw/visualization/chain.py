@@ -1,12 +1,9 @@
+from typing import Optional, Dict
+
 import numpy as np
 
-from typing import Optional, Dict
-from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
-from PIL import Image, ImageDraw, ImageFont
 from .chain_components.shape import Other, Helix, Strand, Gap
 from .chain_components.label import RegularLabel
-
 
 class Chain:
     def __init__(self, chain: 'Chain', color_structures: str,
@@ -48,7 +45,7 @@ class Chain:
         residue_height = self.__shapes_storage[0].height
         return residue_height * self._split_info['split_levels'] + margin
     
-    def _generate_label(self)  -> RegularLabel:
+    def _generate_label(self) -> RegularLabel:
         chain_id = self.__chain.chain_id
         return RegularLabel(chain_id, self.__shape_size, 'DejaVuSans.ttf')
     

@@ -7,14 +7,18 @@ from struct_draw.visualization.canvas import Canvas
 
 def run_non_aligned_chains() ->None:
     pdb_file_path = 'tests/alignments/1ad0.pdb'
-    pdb = PDB(pdb_file_path)
+    dssp_out_path = 'dssp.out'
+    with open(dssp_out_path, 'r') as f:
+    	dssp_content = f.read()
+    pdb = PDB('mkdssp', pdb_file_path)
+    pdb2 = PDB('mkdssp', algorithmm_out=dssp_content)
     chain_A = pdb.get_chain('A')
-    chain_B = pdb.get_chain('B')
+    chain_A2 = pdb2.get_chain('A')
     canvas = Canvas('white')
     annotate_dict = {'secondary_structure': True}
     annotate_dict_2 = {'secondary_structure': True, 'amino_acid': True}
-    canvas.add_chain(chain_A, shape_size=50, annotate=None)
-    canvas.add_chain(chain_A, shape_size=50, annotate=annotate_dict_2, split=80)
+    canvas.add_chain(chain_A, shape_size=50, annotate=None, split=80)
+    canvas.add_chain(chain_A2, shape_size=50, annotate=None, split=80)
     canvas.add_title('DejaVuSans.ttf', 100, 'Test Title', 'right')
     #canvas.add_chain(chain_B, 'struct', shape_size=10)
     img = canvas.get_image()
