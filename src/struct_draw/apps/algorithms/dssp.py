@@ -12,17 +12,17 @@ class DSSP(BaseAlgorithm):
         
     
     def run(self, pdb_file: str) -> str:
-        DSSP_cmd = [self._algorithm_sub_name, "--output-format=dssp", pdb_file]
-        p = subprocess.Popen(DSSP_cmd, universal_newlines=True,
+        command = [self._algorithm_sub_name, "--output-format=dssp", pdb_file]
+        p = subprocess.Popen(command, universal_newlines=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                          
         out, err = p.communicate()
         return out
         
-    def process_data(self, dssp_out: str) -> np.ndarray:
+    def process_data(self, algorithm_out: str) -> np.ndarray:
         is_start = False
         data = []
-        for line in dssp_out.split('\n'):
+        for line in algorithm_out.split('\n'):
             if re.search(r"RESIDUE AA STRUCTURE", line):
                 is_start = True
                 continue
@@ -35,17 +35,15 @@ class DSSP(BaseAlgorithm):
 			    
             if line[11] == ' ': #Skip line if no reidue
                 continue
-			    
-            dssp_index = int(line[1:5])
+	    
             residue_index = int(line[5:10])
             insertion_code = line[10]
             chain_id = line[11]
             AA = line[13]
             SS = line[16] if line[16] != ' ' else '-'
-            data.append((dssp_index, residue_index, insertion_code, chain_id, AA, SS))
+            data.append((residue_index, insertion_code, chain_id, AA, SS))
             
-        dtype = [('dssp_index', 'i4'),
-                ('residue_index', 'i4'),
+        dtype = [('residue_index', 'i4'),
                 ('insertion_code', 'U1'),
                 ('chain_id', 'U1'),
                 ('AA', 'U1'),

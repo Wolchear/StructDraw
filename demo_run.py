@@ -10,7 +10,7 @@ def run_non_aligned_chains() ->None:
     dssp_out_path = 'dssp.out'
     with open(dssp_out_path, 'r') as f:
     	dssp_content = f.read()
-    pdb = PDB('mkdssp', pdb_file_path)
+    pdb = PDB('stride', pdb_file_path)
     pdb2 = PDB('mkdssp', algorithmm_out=dssp_content)
     chain_A = pdb.get_chain('A')
     chain_A2 = pdb2.get_chain('A')

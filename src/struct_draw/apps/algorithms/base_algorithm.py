@@ -11,5 +11,5 @@ class BaseAlgorithm(ABC):
         pass
      
     @abstractmethod  
-    def process_data(self, app_out: str) -> np.ndarray:
+    def process_data(self, algorithm_out: str) -> np.ndarray:
         pass
