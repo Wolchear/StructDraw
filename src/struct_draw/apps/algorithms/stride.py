@@ -56,7 +56,7 @@ class Stride(BaseAlgorithm):
                 insertion_code = ""
                 residue_index = int(residue_index_with_insertion_code)
             chain_id = line[9]
-            AA = AMINO_ACIDS.get(line[5:7], 'X')
+            AA = AMINO_ACIDS.get(line[5:8], 'X')
             SS = line[24]
             data.append((residue_index, insertion_code, chain_id, AA, SS))
             

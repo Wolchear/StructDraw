@@ -10,6 +10,7 @@ class RegularLabel():
     def __post_init__(self):
         self._font_obj = ImageFont.truetype(self._font, self._font_size)
         bbox = self._font_obj.getbbox(self._text)
+        self._offset_x, self._offset_y = bbox[0], bbox[1]
         self._text_width = bbox[2] - bbox[0]
         self._text_height = bbox[3] - bbox[1]
     

@@ -17,8 +17,8 @@ def run_non_aligned_chains() ->None:
     canvas = Canvas('white')
     annotate_dict = {'secondary_structure': True}
     annotate_dict_2 = {'secondary_structure': True, 'amino_acid': True}
-    canvas.add_chain(chain_A, shape_size=50, annotate=None, split=80)
-    canvas.add_chain(chain_A2, shape_size=50, annotate=None, split=80)
+    canvas.add_chain(chain_A, shape_size=50, split=80)
+    canvas.add_chain(chain_A2, shape_size=50, show_amino_code=False, split=80)
     canvas.add_title('DejaVuSans.ttf', 100, 'Test Title', 'right')
     #canvas.add_chain(chain_B, 'struct', shape_size=10)
     img = canvas.get_image()
