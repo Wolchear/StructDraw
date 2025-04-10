@@ -25,7 +25,7 @@ def run_non_aligned_chains() ->None:
 def run_aligned_chains() -> None:
     alignment = 'tests/alignments/light.afa'
     data_dir = 'tests/alignments'
-    new_alignment = Alignment(alignment, data_dir)
+    new_alignment = Alignment(alignment, data_dir, 'mkdssp')
     canvas = Canvas('white')
     for model in new_alignment.models:
         for chain in model.get_chain_list():
