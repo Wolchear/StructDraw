@@ -15,8 +15,6 @@ def run_non_aligned_chains() ->None:
     chain_A = pdb.get_chain('A')
     chain_A2 = pdb2.get_chain('A')
     canvas = Canvas('white')
-    annotate_dict = {'secondary_structure': True}
-    annotate_dict_2 = {'secondary_structure': True, 'amino_acid': True}
     canvas.add_chain(chain_A, shape_size=50, split=80)
     canvas.add_chain(chain_A2, shape_size=50, show_amino_code=False, split=80)
     canvas.add_title('DejaVuSans.ttf', 100, 'Test Title', 'right')
@@ -29,11 +27,10 @@ def run_aligned_chains() -> None:
     data_dir = 'tests/alignments'
     new_alignment = Alignment(alignment, data_dir)
     canvas = Canvas('white')
-    annotate_dict = {'secondary_structure': True}
     for model in new_alignment.models:
         for chain in model.get_chain_list():
             chain_to_add = model.get_chain(chain)
-            canvas.add_chain(chain_to_add, shape_size=20,annotate=annotate_dict)
+            canvas.add_chain(chain_to_add, shape_size=20)
     
     img = canvas.get_image()
     img.show()

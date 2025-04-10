@@ -8,10 +8,8 @@ class Canvas:
         self.__legend_obj = None
         self._draw_area = DrawArea()
         	
-    def add_chain(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True,
-                  annotate: bool = None, split:int = None) -> None:
-        self._draw_area.add_chain(chain, shape_size, show_amino_code,
-                                  annotate, split)
+    def add_chain(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True, split:int = None) -> None:
+        self._draw_area.add_chain(chain, shape_size, show_amino_code, split)
         
     def add_title(self, font:str, font_size:int, text:str, text_position:str) -> None:
         self._title.add_label(font, font_size, text, text_position)

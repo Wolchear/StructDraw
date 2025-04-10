@@ -7,13 +7,12 @@ from .chain_components.label import RegularLabel
 
 class Chain:
     def __init__(self, chain: 'Chain', color_structures: str, shape_size: int,
-                 show_amino_code: bool = True, annotate: Dict[str, bool] = None, split: Optional[int] = None):
+                 show_amino_code: bool = True, split: Optional[int] = None):
         self.__chain = chain
         self.__residues_quantity = len(self.__chain.residues)
         self.__color_structures = color_structures
         self._show_amino_code = show_amino_code
         self.__shape_size = shape_size
-        self.__annotate = annotate
         self._split_info = self._compute_split_info(split)
         self.__chain_label = self._generate_label()    
         self.__shapes_storage = self._generate_shapes()
@@ -75,7 +74,7 @@ class Chain:
             shape = structure_classes.get(ss, Other)
             fillcolor = structure_colors[shape.__name__]
             shape_storage[index] = shape(residue, self.__shape_size,
-                                   fillcolor, self._show_amino_code, sub_structure_shape_pos, self.__annotate)
+                                   fillcolor, self._show_amino_code, sub_structure_shape_pos)
             if is_differen_sub_structure:
                 sub_structure_shape_pos = 'first'
                 is_differen_sub_structure = False

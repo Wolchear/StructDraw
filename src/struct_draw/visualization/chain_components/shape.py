@@ -14,38 +14,20 @@ class BaseShape(ABC):
     _show_amino_code: bool
     _pos_in_structure: str
     _amino_label: object = field(init=False)
-    _annotate: Optional[Dict[str, bool]] = field(default=None)
-    _annotation_labels: Optional[list] = field(init=False)
     _font_size: int = field(init=False)
     _font: str = field(default='DejaVuSans.ttf')
 
     @property
-    def height(self):
-        height = self._size
-        if self._annotate is not None:
-            for label in self._annotation_labels:
-                height += label.height     
-        return height
+    def height(self):   
+        return self._size
     
     def __post_init__(self) -> None:
-        self._font_size =  self._size * 0.4
-        self._annotation_labels = []
         if self._show_amino_code:
-        	self._amino_label = self._generate_amino_annotation()
-        if self._annotate is not None:
-           self._generate_annotation_labels()
-    
-    
+            self._font_size =  self._size * 0.4
+            self._amino_label = self._generate_amino_annotation()
+     
     def _generate_amino_annotation(self) -> RegularLabel:
         return RegularLabel(self._residue.amino_acid, self._font_size, self._font)
-    
-    def _generate_annotation_labels(self) -> None:
-        to_annotate_list = list(self._annotate.keys())
-        offset = self._size
-        for key in to_annotate_list:
-            self._annotation_labels.append(RegularLabel(getattr(self._residue, key),
-                                                        self._font_size, self._font))
-    
     
     def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         self._draw_self(x_0, y_0, draw_context)
@@ -58,8 +40,6 @@ class BaseShape(ABC):
             adjusted_y = amino_label_y_0 - self._amino_label._offset_y
             
             self._amino_label.draw(adjusted_x, adjusted_y, draw_context)
-        y_1 = y_0 + self._size
-        self._draw_annotation_labels(x_0, y_1, draw_context)
     
         
     @abstractmethod
@@ -67,10 +47,6 @@ class BaseShape(ABC):
         pass
     
     
-    def _draw_annotation_labels(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
-        for label in self._annotation_labels:
-            label.draw(x_0, y_0, draw_context)
-            y_0 += label.height
             
 @dataclass        
 class Other(BaseShape):    
