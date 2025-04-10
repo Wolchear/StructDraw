@@ -63,25 +63,42 @@ class Other(BaseShape):
 @dataclass
 class Helix(BaseShape):
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
+        points = []
         x_1 = x_0 + self._size
         y_1 = y_0 + self._size
         outline_width = ceil(self._size * 0.05)
-        points = [(x_0, y_0 + int(self._size * 0.4)),                         #A
-                  (x_0 + int(self._size * 0.1), y_0 +int(self._size * 0.4)),  #B
-                  (x_0 + int(self._size * 0.05), y_0),                        #C
-                  (x_0 + int(self._size * 0.4), y_0),                         #D
-                  (x_0 + int(self._size * 0.5), y_0 + int(self._size * 0.4)), #E
-                  (x_0 + int(self._size * 0.6), y_0),                         #F
-                  (x_0 + int(self._size * 0.8), y_0),                         #G
-                  (x_0 + int(self._size * 0.9), y_0 + int(self._size * 0.4)), #H
-                  (x_0 + int(self._size), y_0 + int(self._size * 0.4)),       #I
-                  (x_0 + int(self._size), y_0 + int(self._size * 0.6)),       #J
-                  (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.6)), #K
-                  (x_0 + int(self._size * 0.75), y_0 + int(self._size * 0.6)),#L
-                  (x_0 + int(self._size * 0.6), y_1),                         #M
-                  (x_0 + int(self._size * 0.4), y_1),                         #N
-                  (x_0 + int(self._size * 0.25), y_0 + int(self._size * 0.6)),#O
-                  (x_0, y_0 + int(self._size * 0.6))]                         #R
+        if self._pos_in_structure == 'first':
+            points = [ (x_0,                         y_0 + int(self._size * 0.3)), # A
+                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.3)), # B
+                       (x_0 + int(self._size * 0.6), y_0 + int(self._size * 0.1)), # C
+                       (x_0 + int(self._size),       y_0 + int(self._size * 0.1)), # D
+                       (x_0 + int(self._size),       y_0 + int(self._size * 0.5)), # E
+                       (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.5)), # F
+                       (x_0 + int(self._size * 0.6), y_0 + int(self._size * 0.7)), # G
+                       (x_0,                         y_0 + int(self._size * 0.7))] # H
+        elif self._pos_in_structure == 'inner':
+            points = [ (x_0,                         y_0 + int(self._size * 0.1)), # A
+                       (x_0 + int(self._size * 0.2), y_0 + int(self._size * 0.1)), # B
+                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.25)),# C
+                       (x_0 + int(self._size * 0.6), y_0 + int(self._size * 0.25)),# D
+                       (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.1)), # E
+                       (x_0 + int(self._size),       y_0 + int(self._size * 0.1)), # F
+                       (x_0 + int(self._size),       y_0 + int(self._size * 0.5)), # G
+                       (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.5)), # H
+                       (x_0 + int(self._size * 0.7), y_0 + int(self._size * 0.7)), # K
+                       (x_0 + int(self._size * 0.3), y_0 + int(self._size * 0.7)), # L
+                       (x_0 + int(self._size * 0.2), y_0 + int(self._size * 0.5)), # M
+                       (x_0,                         y_0 + int(self._size * 0.5))] # N
+        elif self._pos_in_structure == 'last':
+            points = [ (x_0,                         y_0 + int(self._size * 0.1)), # A
+                       (x_0 + int(self._size * 0.3), y_0 + int(self._size * 0.1)), # B
+                       (x_0 + int(self._size * 0.5), y_0 + int(self._size * 0.3)), # C
+                       (x_0 + int(self._size),       y_0 + int(self._size * 0.3)), # D
+                       (x_0 + int(self._size),       y_0 + int(self._size * 0.7)), # E
+                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.7)), # F
+                       (x_0 + int(self._size * 0.2), y_0 + int(self._size * 0.5)), # G
+                       (x_0,                         y_0 + int(self._size * 0.5))] # H
+                       
                   
         draw_context.polygon(points, outline="black", fill=self._color, width=outline_width)
 
