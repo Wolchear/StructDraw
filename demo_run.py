@@ -15,6 +15,7 @@ def run_non_aligned_chains() ->None:
     chain_A = pdb.get_chain('A')
     chain_A2 = pdb2.get_chain('A')
     canvas = Canvas('white')
+    canvas.add_chain(chain_A, shape_size=50, split=80, start=150, end=161)
     canvas.add_chain(chain_A, shape_size=50, split=80)
     canvas.add_chain(chain_A2, shape_size=50, show_amino_code=False, split=80)
     canvas.add_title('DejaVuSans.ttf', 100, 'Test Title', 'right')

@@ -1,5 +1,9 @@
+from typing import Optional
+
 from PIL import Image, ImageDraw, ImageFont
+
 from .canvas_components import Title, DrawArea
+
 
 class Canvas:
     def __init__(self, background_color: str):
@@ -8,8 +12,9 @@ class Canvas:
         self.__legend_obj = None
         self._draw_area = DrawArea()
         	
-    def add_chain(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True, split:int = None) -> None:
-        self._draw_area.add_chain(chain, shape_size, show_amino_code, split)
+    def add_chain(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True,
+    		  split:int = None, start: Optional[int] = None, end: Optional[int] = None) -> None:
+        self._draw_area.add_chain(chain, shape_size, show_amino_code, split, start, end)
         
     def add_title(self, font:str, font_size:int, text:str, text_position:str) -> None:
         self._title.add_label(font, font_size, text, text_position)

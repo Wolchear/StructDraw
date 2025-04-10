@@ -7,9 +7,12 @@ from .chain_components.label import RegularLabel
 
 class Chain:
     def __init__(self, chain: 'Chain', color_structures: str, shape_size: int,
-                 show_amino_code: bool = True, split: Optional[int] = None):
+                 show_amino_code: bool = True, split: Optional[int] = None,
+                 start: Optional[int] = None, end: Optional[int] = None):
+        self._start = start - 1 if start is not None else 0
+        self._end = end if end is not None else len(chain.residues)
         self.__chain = chain
-        self.__residues_quantity = len(self.__chain.residues)
+        self.__residues_quantity = len(self.__chain.residues[self._start:self._end])
         self.__color_structures = color_structures
         self._show_amino_code = show_amino_code
         self.__shape_size = shape_size
@@ -63,18 +66,23 @@ class Chain:
         sub_structure_shape_pos = 'first'
         is_differen_sub_structure = False
              
-        for index, residue in enumerate(self.__chain.residues):      
+        for i, global_index in enumerate(range(self._start, self._end)):
+            residue = self.__chain.residues[global_index]
             ss = residue.secondary_structure
-            if index != len(self.__chain.residues) - 1:
-                    if ss != self.__chain.residues[index + 1].secondary_structure:
-                        is_differen_sub_structure = True
-                        sub_structure_shape_pos = 'last'
+            shape = structure_classes.get(ss, Other)
+            
+            if global_index != self._end - 1:
+                next_shape = structure_classes.get(self.__chain.residues[global_index + 1].secondary_structure, Other)
+                if shape != next_shape:
+                    is_differen_sub_structure = True
+                    sub_structure_shape_pos = 'last'
             else:
                 sub_structure_shape_pos = 'last'
-            shape = structure_classes.get(ss, Other)
+
             fillcolor = structure_colors[shape.__name__]
-            shape_storage[index] = shape(residue, self.__shape_size,
-                                   fillcolor, self._show_amino_code, sub_structure_shape_pos)
+            shape_storage[i] = shape(residue, self.__shape_size,
+                                     fillcolor, self._show_amino_code, sub_structure_shape_pos)
+
             if is_differen_sub_structure:
                 sub_structure_shape_pos = 'first'
                 is_differen_sub_structure = False
