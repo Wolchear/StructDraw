@@ -5,10 +5,6 @@ from PIL import Image, ImageDraw, ImageFont
 from .canvas_components import Title, DrawArea
 from struct_draw.visualization.canvas_components import Title, DrawArea
 
-CHAIN_DEFAULT_ANNOTATION = {'chain_id': True,
-                            'algorithm': False,
-                            'model_id': True}
-
 class Canvas:
     def __init__(self, background_color: str):
         self.__background_color = background_color
@@ -16,9 +12,8 @@ class Canvas:
         self.__legend_obj = None
         self._draw_area = DrawArea()
         	
-    def add_chain(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True,
-    		  split: int = None, start: int = 0, end: Optional[int] = None, chain_annotation = CHAIN_DEFAULT_ANNOTATION) -> None:
-        self._draw_area.add_chain(chain, shape_size, show_amino_code, split, start, end, chain_annotation)
+    def add_chain(self, chain: 'Chain') -> None:
+        self._draw_area.add_chain(chain)
         
     def add_title(self, font:str, font_size:int, text:str, text_position:str) -> None:
         self._title.add_label(font, font_size, text, text_position)

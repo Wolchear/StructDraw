@@ -1,14 +1,12 @@
 from .base_component import BaseCanvasComponent
-from struct_draw.visualization.chain import Chain
 
 class DrawArea(BaseCanvasComponent):
     def __init__(self):
         super().__init__()
         self.__chains_storage = []
         
-    def add_chain(self, chain: 'Chain', shape_size, show_amino_code, split, start, end, chain_annotation) -> None:
-        new_chain = Chain(chain, 'struct', shape_size,show_amino_code, split, start, end, chain_annotation)
-        self.__chains_storage.append(new_chain)
+    def add_chain(self, chain: 'Chain') -> None:
+        self.__chains_storage.append(chain)
     
     def compute_size(self) -> None:
         self._height = sum(chain.height for chain in self.__chains_storage)

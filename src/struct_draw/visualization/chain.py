@@ -9,8 +9,7 @@ CHAIN_DEFAULT_ANNOTATION = {'chain_id': True,
                             'model_id': True}
 
 class Chain:
-    def __init__(self, chain: 'Chain', color_structures: str, shape_size: int,
-                 show_amino_code: bool = True, split: Optional[int] = None,
+    def __init__(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True, split: Optional[int] = None,
                  start: int = 0, end: Optional[int] = None, chain_annotation: Dict[str, bool] = CHAIN_DEFAULT_ANNOTATION):
         self.__chain = chain
         self.__shape_size = shape_size
