@@ -4,10 +4,13 @@ import numpy as np
 
 from .chain_base_area import BaseArea
 from struct_draw.visualization.small_units.shape import Other, Helix, Strand, Gap
+from .color_mods.mode_factory import create_mode
 
 class ShapesArea(BaseArea):
     def __init__( self, chain: 'Chain', shape_size: int, split: Optional[int] = None,
-                  show_amino_code: bool = True, start: int = 0, end: Optional[int] = None):
+                  show_amino_code: bool = True, start: int = 0, end: Optional[int] = None,
+                  color_mode: str = 'structure', color_sub_mode: str = 'secondary',
+                  custom_palette: Optional[Dict[str, str]] = None):
         self._start = start
         self._end = end if end is not None else len(chain.residues)
         self.__chain = chain
@@ -15,6 +18,7 @@ class ShapesArea(BaseArea):
         self.__shape_size = shape_size
         self._split_info = self._compute_split_info(split)
         self._show_amino_code = show_amino_code
+        self._palette = create_mode(color_mode, color_sub_mode, custom_palette)
         self.__shapes_storage = self._generate_shapes()
     
     
@@ -73,7 +77,7 @@ class ShapesArea(BaseArea):
             else:
                 sub_structure_shape_pos = 'last'
 
-            fillcolor = structure_colors[shape.__name__]
+            fillcolor = self._palette.get_color(residue)
             shape_storage[i] = shape(residue, self.__shape_size,
                                      fillcolor, self._show_amino_code, sub_structure_shape_pos)
 

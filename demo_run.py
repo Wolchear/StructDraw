@@ -40,7 +40,7 @@ def run_aligned_chains() -> None:
     
     
 def run_struct_draw() -> None:
-    run_non_aligned_chains()
+    run_aligned_chains()
 
 if __name__ == '__main__':
     run_struct_draw()

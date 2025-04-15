@@ -10,7 +10,8 @@ CHAIN_DEFAULT_ANNOTATION = {'chain_id': True,
 
 class Chain:
     def __init__(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True, split: Optional[int] = None,
-                 start: int = 0, end: Optional[int] = None, chain_annotation: Dict[str, bool] = CHAIN_DEFAULT_ANNOTATION):
+                 start: int = 0, end: Optional[int] = None, chain_annotation: Dict[str, bool] = CHAIN_DEFAULT_ANNOTATION,
+                 color_mode: str = 'structure', color_sub_mode: str = 'secondary', custom_palette: Optional[Dict[str, str]] = None):
         self.__chain = chain
         self.__shape_size = shape_size
         self._annotation_area = AnnotationArea( chain=chain,
@@ -18,7 +19,9 @@ class Chain:
                                                 font_size=shape_size )
         self._shapes_area = ShapesArea( chain=chain, shape_size=shape_size,
                                         show_amino_code=show_amino_code,
-                                        split=split, start=start, end=end )
+                                        split=split, start=start, end=end,
+                                        color_mode=color_mode, color_sub_mode=color_sub_mode,
+                                        custom_palette=custom_palette)
         
     @property 
     def width(self) -> int:
