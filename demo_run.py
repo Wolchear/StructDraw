@@ -14,13 +14,15 @@ def run_non_aligned_chains() ->None:
     pdb2 = PDB('mkdssp', algorithmm_out=dssp_content)
     chain_A = pdb.get_chain('A')
     chain_A2 = pdb2.get_chain('A')
+    chain_annotation = {'model_id': True, 'algorithm': True}
     canvas = Canvas('white')
     canvas.add_chain(chain_A, shape_size=50, split=80, start=150, end=161)
-    canvas.add_chain(chain_A, shape_size=50, split=80)
+    canvas.add_chain(chain_A, shape_size=50, split=80, chain_annotation=chain_annotation)
     canvas.add_chain(chain_A2, shape_size=50, show_amino_code=False, split=80)
     canvas.add_title('DejaVuSans.ttf', 100, 'Test Title', 'right')
     #canvas.add_chain(chain_B, 'struct', shape_size=10)
     img = canvas.get_image()
+    img.save('output_image.png')
     img.show()
 
 def run_aligned_chains() -> None:

@@ -1,10 +1,9 @@
-import biotite.structure.io.pdb as pdb
-import biotite.structure.io.pdbx as pdbx
-import numpy as np
-
+import os
 from typing import Optional
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+
+import numpy as np
 
 from struct_draw.apps.interface import get_algorithm
 
@@ -12,8 +11,9 @@ class BaseModel(ABC):
     def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithmm_out: Optional[str] = None):
         self._pdb_file = pdb_file
         self._include_only = include_only
+        self._algorithm_name = algorithm_name
         self._algorithm = get_algorithm(algorithm_name)
-        self._algorithmm_out = algorithmm_out if algorithmm_out is not None else self.run_dssp()
+        self._algorithmm_out = algorithmm_out if algorithmm_out is not None else self.run_algorithm()
         self._chains = self.process_algorithm_data()
         
         
@@ -25,7 +25,7 @@ class BaseModel(ABC):
     def get_chain_list(self) -> dict:
         return self._chains
         
-    def run_dssp(self) -> str:
+    def run_algorithm(self) -> str:
         return self._algorithm.run(self._pdb_file)
                                             
     def process_algorithm_data(self) -> dict:
@@ -36,7 +36,10 @@ class BaseModel(ABC):
             if self._include_only is not None and chain_id not in self._include_only:
                 continue
             chain_data = dssp_data[dssp_data['chain_id'] == chain_id]
-            chains[chain_id] = Chain(chain_id, 'mkdssp', self._pdb_file, chain_data)
+            pdb_id = None
+            if self._pdb_file is not None:
+            	pdb_id = os.path.splitext(os.path.basename(self._pdb_file))[0]
+            chains[chain_id] = Chain(chain_id, self._algorithm_name, pdb_id, chain_data)
         return chains
 
 class PDBx(BaseModel):
@@ -52,7 +55,7 @@ class PDB(BaseModel):
 @dataclass     
 class Chain:
     chain_id: str
-    ss_algorithm: str
+    algorithm: str
     model_id: str
     dssp_data: np.ndarray = field(repr=False)
     residues: np.ndarray = field(init=False)
