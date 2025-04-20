@@ -48,7 +48,7 @@ AA_GROUPS = {"A": "hydrophobic",  # Alanine
              "V": "hydrophobic"}  # Valine
 
 class AaMode(BaseMode):
-    AVAILABLE_SUB_MODES = ['hydrophilicity', 'single_aa']
+    AVAILABLE_SUB_MODS = ['hydrophilicity', 'single_aa']
     def __init__(self, sub_mode: str, color_palette: Optional[Dict[str, str]] = None):
         super().__init__(sub_mode, self.AVAILABLE_SUB_MODS)
         if color_palette is None:
@@ -61,10 +61,10 @@ class AaMode(BaseMode):
         
     def get_color(self, residue: 'Residue') -> str:
         if self._sub_mode == 'hydrophilicity':
-            classification = AA_GROUPS.get(residue.amino_acid)
+            classification = AA_GROUPS.get(residue.amino_acid.upper())
             if classification is None:
                 return "#CCCCCC"
             return self.color_palette.get(classification, "#CCCCCC")
         elif self._sub_mode == 'single_aa':
-            return self.color_palette.get(residue.amino_acid, "#CCCCCC")
+            return self.color_palette.get(residue.amino_acid.upper(), "#CCCCCC")
         return "#CCCCCC"

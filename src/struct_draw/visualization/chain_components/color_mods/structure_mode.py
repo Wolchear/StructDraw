@@ -1,16 +1,11 @@
 from typing import Dict, Optional
 
 from .base_mode import BaseMode
-
-STRUCTURES_GROUPS = { 'H': 'Helix', 'I': 'Helix', 'G': 'Helix', 'P': 'Helix',
-                      'B': 'Strand', 'E': 'Strand',
-                      'T': 'Other', 'S': 'Other','-': 'Other', 'C': 'Other',
-                      'gap': 'Gap'}
                       
-DEFAULT_STRUCTURES_COLORS = {'Helix': 'green',
-                             'Strand': 'blue',
-                             'Other': 'white',
-                             'Gap': 'black'}
+DEFAULT_STRUCTURES_COLORS = {'helix': 'green',
+                             'strand': 'blue',
+                             'other': 'white',
+                             'gap': 'black'}
 
 class StructureMode(BaseMode):
     AVAILABLE_SUB_MODS = ['secondary']
@@ -24,8 +19,4 @@ class StructureMode(BaseMode):
         
     def get_color(self, residue: 'Residue') -> str:
         if self._sub_mode == 'secondary':
-            classification = STRUCTURES_GROUPS.get(residue.secondary_structure)
-            if classification is None:
-                return "#CCCCCC"
-            return self.color_palette.get(classification, "#CCCCCC")
-        return "#CCCCCC"
+            return self.color_palette.get(residue.secondary_structure.lower(), "#CCCCCC")

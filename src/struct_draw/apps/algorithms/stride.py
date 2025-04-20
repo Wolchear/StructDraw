@@ -1,10 +1,19 @@
 import subprocess
 import re
+from typing import Dict, Optional
 
 import numpy as np
 
 from .base_algorithm import BaseAlgorithm
 
+
+DEFAULT_SS_TRANSLATION = {'H': 'Helix',
+                          'G': 'Helix',
+                          'I': 'Helix',
+                          'E': 'Strand',
+                          'B': 'Strand',
+                          'T': 'Other',
+                          'C': 'Other'}
 
 AMINO_ACIDS = { "ALA": "A",
                 "ARG": "R",
@@ -29,8 +38,10 @@ AMINO_ACIDS = { "ALA": "A",
 
 
 class Stride(BaseAlgorithm):
-    def __init__(self, algorithm_sub_name: str):
-        super().__init__(algorithm_sub_name)
+    def __init__(self, algorithm_sub_name: str, ss_translation: Optional[Dict[str,str]]):
+        super().__init__(algorithm_sub_name, ss_translation)
+        if self.SS_TRANSLATION is None:
+            self.SS_TRANSLATION = DEFAULT_SS_TRANSLATION
         
     
     def run(self, pdb_file: str) -> str:
@@ -57,14 +68,18 @@ class Stride(BaseAlgorithm):
                 residue_index = int(residue_index_with_insertion_code)
             chain_id = line[9]
             AA = AMINO_ACIDS.get(line[5:8], 'X')
-            SS = line[24]
-            data.append((residue_index, insertion_code, chain_id, AA, SS))
+            SS_code = line[24]
+            SS = self.SS_TRANSLATION.get(SS_code, 'Other')
+            
+            data.append((residue_index, insertion_code, chain_id, AA, SS, SS_code))
+            
             
         dtype = [('residue_index', 'i4'),
                 ('insertion_code', 'U1'),
                 ('chain_id', 'U1'),
                 ('AA', 'U1'),
-                ('SS', 'U1')]
+                ('SS', 'U6'),
+                ('SS_code', 'U1')]
 			    
         np_data = np.array(data, dtype=dtype)
         return np_data

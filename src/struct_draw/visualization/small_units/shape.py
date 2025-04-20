@@ -3,7 +3,7 @@ from typing import Dict, Optional
 from abc import ABC, abstractmethod
 from math import ceil
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageColor
 from .label import RegularLabel
 
 @dataclass
@@ -16,6 +16,7 @@ class BaseShape(ABC):
     _amino_label: object = field(init=False)
     _font_size: int = field(init=False)
     _font: str = field(default='DejaVuSans.ttf')
+    _font_color: str = field(init=False)
 
     @property
     def height(self):   
@@ -23,11 +24,24 @@ class BaseShape(ABC):
     
     def __post_init__(self) -> None:
         if self._show_amino_code:
+            self._font_color = self.get_contrast_color(self._color)
             self._font_size =  self._size * 0.4
             self._amino_label = self._generate_amino_annotation()
+    
+    
+    def get_contrast_color(self, bg_color: str, threshold: int = 128) -> str:
+        """
+        Retuns '#FFFFFF' if bg_color is light
+        Returns '#000000' if bg_color is darks.
+        bg_color — '#RRGGBB' or 'rgb(...)'
+        """
+        r, g, b = ImageColor.getrgb(bg_color)
+        luminance = 0.299*r + 0.587*g + 0.114*b
+        return '#FFFF99' if luminance < threshold else '#000000' 
      
+    
     def _generate_amino_annotation(self) -> RegularLabel:
-        return RegularLabel(self._residue.amino_acid, self._font_size, self._font)
+        return RegularLabel(self._residue.amino_acid, self._font_size, self._font, self._font_color)
     
     def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         self._draw_self(x_0, y_0, draw_context)
@@ -45,8 +59,7 @@ class BaseShape(ABC):
     @abstractmethod
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         pass
-    
-    
+
             
 @dataclass        
 class Other(BaseShape):    
@@ -55,7 +68,7 @@ class Other(BaseShape):
         fixed_y_1 = y_0 + int(self._size * 0.7)
         x_1 = x_0 + self._size
         y_1 = y_0 + self._size
-        outline_width = ceil(self._size * 0.05)
+        outline_width = ceil(self._size * 0.03)
         draw_context.rectangle([x_0, fixed_y_0 , x_1, fixed_y_1],
                                 fill=self._color, outline='black', width=outline_width)
         

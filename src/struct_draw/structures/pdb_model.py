@@ -65,7 +65,8 @@ class Chain:
         Residue(index=row['residue_index'],
                 insertion_code=row['insertion_code'],
                 amino_acid=row['AA'],
-                secondary_structure=row['SS'])
+                secondary_structure=row['SS'],
+                ss_code=row['SS_code'])
         for row in self.dssp_data], dtype=object)
                                            
     def align_seq(self, aligned_seq: str) -> None:
@@ -79,7 +80,8 @@ class Chain:
                 new_residues.append(Residue(index='-',
                                             insertion_code='-',
                                             amino_acid='_',
-                                            secondary_structure='gap'))
+                                            secondary_structure='gap',
+                                            ss_code='-'))
         self.residues = np.array(new_residues, dtype=object)
             
 @dataclass
@@ -88,3 +90,4 @@ class Residue:
 	insertion_code: str
 	amino_acid: str
 	secondary_structure: str
+	ss_code: str

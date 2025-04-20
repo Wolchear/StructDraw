@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field
 from PIL import ImageFont
+from typing import Union, Tuple
 
 @dataclass
 class RegularLabel():
     _text: str
     _font_size: int
     _font: str
+    _fill: Union[str, Tuple[int, int, int]] = field(default="#000000")
     
     def __post_init__(self):
         self._font_obj = ImageFont.truetype(self._font, self._font_size)
@@ -24,5 +26,6 @@ class RegularLabel():
     
     def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         draw_context.text([x_0, y_0],
-                          text=self._text, font=self._font_obj,
-                          fill=(0, 0, 0))
+                          text=self._text,
+                          font=self._font_obj,
+                          fill=self._fill)

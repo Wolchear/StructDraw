@@ -10,15 +10,17 @@ def run_non_aligned_chains() ->None:
     dssp_out_path = 'dssp.out'
     with open(dssp_out_path, 'r') as f:
     	dssp_content = f.read()
-    pdb = PDB('stride', pdb_file_path)
+    pdb = PDB('mkdssp', pdb_file_path)
     pdb2 = PDB('mkdssp', algorithmm_out=dssp_content)
     chain_A = pdb.get_chain('A')
     chain_A2 = pdb2.get_chain('A')
-    chain_annotation = {'model_id': True, 'algorithm': True}
+    chain_annotation = {'model_id': False, 'algorithm': False}
     canvas = Canvas('white')
-    canvas.add_chain(Chain(chain_A, shape_size=50, split=80, start=150, end=161))
-    canvas.add_chain(Chain(chain_A, shape_size=50, split=80, chain_annotation=chain_annotation))
-    canvas.add_chain(Chain(chain_A2, shape_size=50, show_amino_code=False, split=80))
+    #canvas.add_chain(Chain(chain_A, shape_size=50, split=80, end=81))
+    
+    custom_palette = {'helix': 'red', 'strand': 'green', 'other': 'blue'}
+    canvas.add_chain(Chain(chain_A, shape_size=50, split=80, chain_annotation=chain_annotation, custom_palette=custom_palette))
+    canvas.add_chain(Chain(chain_A2, shape_size=50, show_amino_code=True, split=80, color_mode='aa', color_sub_mode='hydrophilicity'))
     canvas.add_title('DejaVuSans.ttf', 100, 'Test Title', 'right')
     #canvas.add_chain(chain_B, 'struct', shape_size=10)
     img = canvas.get_image()
@@ -40,7 +42,7 @@ def run_aligned_chains() -> None:
     
     
 def run_struct_draw() -> None:
-    run_aligned_chains()
+    run_non_aligned_chains()
 
 if __name__ == '__main__':
     run_struct_draw()

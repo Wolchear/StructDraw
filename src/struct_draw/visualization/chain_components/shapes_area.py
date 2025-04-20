@@ -52,14 +52,11 @@ class ShapesArea(BaseArea):
                
     def _generate_shapes(self) -> np.ndarray:
         shape_storage = np.empty(self.__residues_quantity, dtype=object)
-        structure_classes = {'H': Helix, 'I': Helix, 'G': Helix, 'P': Helix,
-                             'B': Strand, 'E': Strand, 'T': Other, 'S': Other,
+        structure_classes = {'Helix': Helix,
+                             'Strand': Strand,
+                             'Other': Other,
                              'gap': Gap}
                       
-        structure_colors = {'Helix': 'green',
-                            'Strand': 'blue',
-                            'Other': 'white',
-                            'Gap': 'black'}
         
         sub_structure_shape_pos = 'first'
         is_differen_sub_structure = False
