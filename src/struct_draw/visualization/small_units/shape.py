@@ -31,9 +31,11 @@ class BaseShape(ABC):
     
     def get_contrast_color(self, bg_color: str, threshold: int = 128) -> str:
         """
-        Retuns '#FFFFFF' if bg_color is light
-        Returns '#000000' if bg_color is darks.
-        bg_color — '#RRGGBB' or 'rgb(...)'
+        Retuns '#FFFF99' if bg_color is dark
+        Returns '#000000' if bg_color is light.
+        bg_color:
+          - #RRGGBB' or
+          - Color name (ex.: white, red, blue,...)
         """
         r, g, b = ImageColor.getrgb(bg_color)
         luminance = 0.299*r + 0.587*g + 0.114*b
@@ -143,5 +145,6 @@ class Gap(BaseShape):
         y_1 = y_0 + self._size
         y_0 = y_0 + 0.5 * self._size
         margin = self._size * 0.1
+        width = ceil(self._size * 0.05)
         draw_context.line([x_0 + margin, y_0, x_1 - margin, y_0],
-                                   		fill=self._color)
+                                   		fill='black')

@@ -2,18 +2,20 @@ import os
 from typing import Optional
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from collections import defaultdict
+import re
 
 import numpy as np
 
 from struct_draw.apps.interface import get_algorithm
 
 class BaseModel(ABC):
-    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithmm_out: Optional[str] = None):
+    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
         self._pdb_file = pdb_file
         self._include_only = include_only
         self._algorithm_name = algorithm_name
         self._algorithm = get_algorithm(algorithm_name)
-        self._algorithmm_out = algorithmm_out if algorithmm_out is not None else self.run_algorithm()
+        self._algorithm_out = algorithm_out if algorithm_out is not None else self.run_algorithm()
         self._chains = self.process_algorithm_data()
         
         
@@ -29,7 +31,7 @@ class BaseModel(ABC):
         return self._algorithm.run(self._pdb_file)
                                             
     def process_algorithm_data(self) -> dict:
-        dssp_data = self._algorithm.process_data(self._algorithmm_out)
+        dssp_data = self._algorithm.process_data(self._algorithm_out)
         unique_chains = np.unique(dssp_data['chain_id'])
         chains = {}
         for chain_id in unique_chains:
@@ -41,16 +43,94 @@ class BaseModel(ABC):
             	pdb_id = os.path.splitext(os.path.basename(self._pdb_file))[0]
             chains[chain_id] = Chain(chain_id, self._algorithm_name, pdb_id, chain_data)
         return chains
+    
+    @abstractmethod   
+    def parse_b_factor(self) -> None:
+        pass
 
 class PDBx(BaseModel):
-    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithmm_out: Optional[str] = None):
-        super().__init__(algorithm_name, pdb_file, include_only, algorithmm_out)
-
+    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
+        super().__init__(algorithm_name, pdb_file, include_only, algorithm_out)
+        if self._pdb_file is not None:
+            self.parse_b_factor()
+            
+    def parse_b_factor(self) -> None:
+        bf_raw: Dict[Tuple[str, int, str], List[float]] = defaultdict(list)
+        in_loop = False
+        headers: List[str] = []
+        idx_map: Dict[str, int] = {}
+        wanted = {'label_asym_id',
+                  'label_seq_id',
+                  'pdbx_PDB_ins_code',
+                  'B_iso_or_equiv'}
+        with open(self._pdb_file, 'r') as fh:
+            for line in fh:
+                line = line.strip()
+                if line.startswith('loop_'):
+                    in_loop = True
+                    headers.clear()
+                    idx_map.clear()
+                    continue
+                if in_loop and line.startswith('_atom_site.'):
+                    tag = line.split('.', 1)[1]
+                    headers.append(tag)
+                    continue
+                if in_loop and headers and not line.startswith('_atom_site.') and line:
+                    if not idx_map:
+                        for i, tag in enumerate(headers):
+                            if tag in wanted:
+                                idx_map[tag] = i
+                    parts = re.split(r"\s+", line)
+                    try:
+                        chain = parts[idx_map['label_asym_id']]
+                        res_seq = int(parts[idx_map['label_seq_id']])
+                        ins_code = parts[idx_map['pdbx_PDB_ins_code']]
+                        if ins_code == '?':
+                            ins_code = ' '
+                        b_val = float(parts[idx_map['B_iso_or_equiv']])
+                    except (KeyError, ValueError, IndexError):
+                        continue
+                    bf_raw[(chain, res_seq, ins_code)].append(b_val)
+                if in_loop and headers and not line:
+                    in_loop = False
+        bf_vec = {k: np.array(v, dtype=float) for k, v in bf_raw.items()}
+        for chain in self._chains.values():
+            for res in chain.residues:
+                key = (chain.chain_id, res.index, res.insertion_code)
+                res.b_factors = bf_vec.get(key, np.array([], dtype=float))
+        
         
 class PDB(BaseModel):   
-    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithmm_out: Optional[str] = None):
-        super().__init__(algorithm_name, pdb_file, include_only, algorithmm_out)
-        
+    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
+        super().__init__(algorithm_name, pdb_file, include_only, algorithm_out)
+        if self._pdb_file is not None:
+            self.parse_b_factor()
+    
+    
+    def parse_b_factor(self) -> None:
+        bf_raw = defaultdict(list)
+        b_pattern = re.compile(r'^\d+\.\d{2}$')
+        with open(self._pdb_file, 'r') as fh:
+            for line in fh:
+                if not line.startswith('ATOM'):
+                    continue
+                chain_id = line[21].strip()
+                seq_str = line[22:26].strip()
+                if not seq_str.isdigit():
+                    continue
+                res_seq = int(seq_str)
+                ins_code = line[26].strip() or ' '
+                b_str = line[60:66].strip()
+                if not b_pattern.match(b_str):
+                    continue
+                b_val = float(b_str)
+                bf_raw[(chain_id, res_seq, ins_code)].append(b_val)
+        bf_vec = {k: np.array(v, dtype=float) for k, v in bf_raw.items()}
+        for chain in self._chains.values():
+            for res in chain.residues:
+                key = (chain.chain_id, res.index, res.insertion_code)
+                res.b_factors = bf_vec.get(key, np.array([], dtype=float))
+                
         
 @dataclass     
 class Chain:
@@ -78,8 +158,8 @@ class Chain:
                 residues_index += 1
             else:
                 new_residues.append(Residue(index='-',
-                                            insertion_code='-',
-                                            amino_acid='_',
+                                            insertion_code=' ',
+                                            amino_acid='',
                                             secondary_structure='gap',
                                             ss_code='-'))
         self.residues = np.array(new_residues, dtype=object)
@@ -91,3 +171,4 @@ class Residue:
 	amino_acid: str
 	secondary_structure: str
 	ss_code: str
+	b_factors: np.ndarray = field(default_factory=lambda: np.array([], dtype=float))
