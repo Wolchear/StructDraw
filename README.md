@@ -28,7 +28,7 @@
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/StructDraw.git
+git clone
 cd StructDraw
 pip install -e .
 ```
