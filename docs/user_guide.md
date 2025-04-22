@@ -16,6 +16,12 @@ I hope this guide will help you better understand its capabilities and make your
   - [Stage 4: Rendering](#stage-4:-rendering)
 - [Coloring Modes](#coloring-modes)
   - [Custom Palettes](#custom-palettes)
+- [Coloring Modes](#coloring-modes)
+  - [Custom Palettes](#custom-palettes)
+- [Alignment Support](#alignment-support)
+  - [Stage 1: Alignment Class Import](#stage-1:-alignment-class-import)
+  - [Stage 2: Alignment Object Creation](#stage-2:-alignment-object-creation)
+  - [Stage 3: Chain Extraction](#stage-3:-chain-extraction)
 
 ## File Import
 ### Stage 1: Model Initialization
@@ -240,3 +246,37 @@ DEFAULT_PALETTE = {(0,   20):  '#0000FF',  # blue
                    (60,  80):  '#FFFF00',  # yellow
                    (80, 200):  '#FF0000'}  # red
 ```
+
+## Alignment Support
+
+`struct_draw` also supports rendering entire alignments. The workflow is very similar to adding individual chains, with a few extra steps.
+
+### Stage 1: Alignment Class Import
+
+```python
+   from struct_draw.structures.alignment import Alignment
+```
+
+### Stage 2: Alignment Object Creation
+You need to provide three parameters in this order:
+- **alignment_file** `str`: the path of your FASTA‑formatted alignment
+- **pdb_files_dir**  `str`: directory where your PDB/PDBx files are stored
+- **algorithm_name** `str`: the secondary‑structure algorithm to use (e.g., "mkdssp")
+
+```python
+new_alignment = Alignment(alignment, pdb_files_dir, 'mkdssp')
+```
+
+### Stage 3: Chain Extraction
+Once the Alignment object is created, you can iterate over its models and chains just like before.
+```python
+for model in new_alignment.models:
+    for chain in model.get_chain_list():
+        chain_to_add = model.get_chain(chain)
+        canvas.add_chain(Chain(chain_to_add,
+                               shape_size=50,
+                               split=80,
+                               color_mode='structure',
+                               color_sub_mode='secondary'))
+```
+
