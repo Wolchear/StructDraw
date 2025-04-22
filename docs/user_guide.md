@@ -6,22 +6,20 @@ I hope this guide will help you better understand its capabilities and make your
 ## Table of Contents
 
 - [File Import](#file-import)
-  - [Stage 1: Model Initialization](#stage-1:-model-initialization)
-  - [Stage 2: Chain Extraction](#stage-2:-chain-extraction)
+  - [Stage 1: Model Initialization](#stage-1-model-initialization)
+  - [Stage 2: Chain Extraction](#stage-2-chain-extraction)
 - [Vsiualization](#vsiualization)
-  - [Stage 1: Canvas initialization](#stage-1:-canvas-initialization)
-  - [Stage 2: Adding a Chain to the Plot](#stage-2:-Adding-a-chain-to-the-plot)
-  - [Stage 3: Chain Visualization Configuration](#stage-3:-chain-visualization-configuration)
-  - [Stage Optional: Title](#stage-optional:-title)
-  - [Stage 4: Rendering](#stage-4:-rendering)
-- [Coloring Modes](#coloring-modes)
-  - [Custom Palettes](#custom-palettes)
+  - [Stage 1: Canvas initialization](#stage-1-canvas-initialization)
+  - [Stage 2: Adding a Chain to the Plot](#stage-2-Adding-a-chain-to-the-plot)
+  - [Stage 3: Chain Visualization Configuration](#stage-3-chain-visualization-configuration)
+  - [Stage Optional: Title](#stage-optional-title)
+  - [Stage 4: Rendering](#stage-4-rendering)
 - [Coloring Modes](#coloring-modes)
   - [Custom Palettes](#custom-palettes)
 - [Alignment Support](#alignment-support)
-  - [Stage 1: Alignment Class Import](#stage-1:-alignment-class-import)
-  - [Stage 2: Alignment Object Creation](#stage-2:-alignment-object-creation)
-  - [Stage 3: Chain Extraction](#stage-3:-chain-extraction)
+  - [Stage 1: Alignment Class Import](#stage-1-alignment-class-import)
+  - [Stage 2: Alignment Object Creation](#stage-2-alignment-object-creation)
+  - [Stage 3: Chain Extraction](#stage-3-chain-extraction)
 
 ## File Import
 ### Stage 1: Model Initialization
