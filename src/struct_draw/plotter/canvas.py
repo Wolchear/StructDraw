@@ -44,7 +44,7 @@ class Canvas:
             font (str): Font file or font name to use.
             font_size (int): Font size for title text.
             text (str): The title text to display.
-            text_position (str): Position specifier (e.g., 'center', 'left').
+            text_position (str): Position specifier (e.g., 'centered', 'left').
         """
         self._title.add_label(font, font_size, text, text_position)
     

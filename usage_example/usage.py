@@ -8,10 +8,11 @@ data_dir = 'data/'
 pdb_file = data_dir + '1ad0.pdb'
 predicted_pdb_file = data_dir + '1ad0_predicted.cif'
 
-canvas = Canvas('white')
-canvas.add_title('DejaVuSans.ttf', 50, 'True and Predicted Chains Comparison', 'centered')
 
-pdb_model = PDB('mkdssp', pdb_file)
+canvas = Canvas('white')
+canvas.add_title(font='DejaVuSans.ttf', font_size=50, text='True and Predicted Chains Comparison', text_position='centered')
+
+pdb_model = PDB(algorithm_name='mkdssp', pdb_file=pdb_file)
 chain_A = pdb_model.get_chain('A')
 canvas.add_chain(Chain(chain_A, shape_size=50, split=80, color_mode='b_factor', color_sub_mode='mean'))
 
