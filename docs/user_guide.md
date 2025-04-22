@@ -74,10 +74,9 @@ pdb_model = PDB(algorithm_name='mkdssp', pdb_file=pdb_file)
 >   That means you need to open and parse the file yourself before passing it into the model.
 
 
+### Stage 2: Chain Extraction
 After creating the model, don’t forget to extract the specific chain you need using its **chain ID** from the PDB file.  
 We'll need this chain later for visualization.
-
-### Stage 2: Chain Extraction
 
 ```python
 chain_A = pdb_model.get_chain('A')
