@@ -2,7 +2,7 @@ from typing import Optional, Dict
 
 import numpy as np
 
-from struct_draw.visualization.chain_components import ShapesArea, AnnotationArea
+from struct_draw.plotter.chain_components import ShapesArea, AnnotationArea
 
 CHAIN_DEFAULT_ANNOTATION = {'chain_id': True,
                             'algorithm': False,

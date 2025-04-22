@@ -1,5 +1,5 @@
 from .base_component import BaseCanvasComponent
-from struct_draw.visualization.small_units.label import RegularLabel
+from struct_draw.plotter.small_units.label import RegularLabel
 
 class Title(BaseCanvasComponent):
     def __init__(self):

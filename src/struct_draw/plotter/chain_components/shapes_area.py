@@ -3,7 +3,7 @@ from typing import Optional, Dict
 import numpy as np
 
 from .chain_base_area import BaseArea
-from struct_draw.visualization.small_units.shape import Other, Helix, Strand, Gap
+from struct_draw.plotter.small_units.shape import Other, Helix, Strand, Gap
 from .color_mods.mode_factory import create_mode
 
 class ShapesArea(BaseArea):

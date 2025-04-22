@@ -1,7 +1,7 @@
 from typing import Optional, Dict
 
 from .chain_base_area import BaseArea
-from struct_draw.visualization.small_units.label import RegularLabel
+from struct_draw.plotter.small_units.label import RegularLabel
 
 class AnnotationArea(BaseArea):
     """

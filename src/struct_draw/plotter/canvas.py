@@ -3,7 +3,7 @@ from typing import Optional
 from PIL import Image, ImageDraw, ImageFont
 
 from .canvas_components import Title, DrawArea
-from struct_draw.visualization.canvas_components import Title, DrawArea
+from struct_draw.plotter.canvas_components import Title, DrawArea
 
 class Canvas:
     """

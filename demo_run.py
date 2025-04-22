@@ -2,8 +2,8 @@
 
 from struct_draw.structures.pdb_model import PDB, PDBx
 from struct_draw.structures.alignment import Alignment
-from struct_draw.visualization.canvas import Canvas
-from struct_draw.visualization import Chain
+from struct_draw.plotter.canvas import Canvas
+from struct_draw.plotter import Chain
 
 def run_non_aligned_chains() ->None:
     custom_palette = {'helix': 'red', 'strand': 'green', 'other': 'blue'}
@@ -52,7 +52,7 @@ def run_aligned_chains() -> None:
     
     
 def run_struct_draw() -> None:
-    run_aligned_chains()
+    run_non_aligned_chains()
 
 if __name__ == '__main__':
     run_struct_draw()

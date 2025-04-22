@@ -1,89 +1,119 @@
-# Plans:
-The next thing I plan to do is clean up unnecessary code. At the very least,
-the visualisation module still contains remnants of old ideas, redundant fields,
-and other unused elements. Ideally, these should be removed before continuing
-further development.
-Additionally, I need to implement text rendering in DrawArea, including residue names,
-indices, and other relevant information. It might also be worth allowing the user to
-customize the size of Shapes.
-Another important feature is implementing a "split" function for chains,
-which users can control. Right now, chains are drawn as long, continuous
-sequences in a single line, which makes interpretation difficult.
-Allowing users to define custom splits would improve readability.
-Once these tasks are complete, I will finalize the Title component and move o
-to implementing a color palette system, so users can control how residues are colored.
-Only after this will I complete the Legend, since it doesn’t make much sense without
-a proper palette system in place.
-## Long-Term Improvements
-Finally, I’d like to explore adding support for alternative algorithms beyond DSSP.
-To do this, I’ll likely need to create an abstract class (e.g., App) that would serve
-as a base for both DSSP and any future algorithms (STRIDE, PROMOTIF etc.). I think this
-is a good idea because we already allow adding individual chains to the drawing.
-Extending this to let users compare the same chains processed by different algorithms
-would add another valuable feature to the program.
-# Modules info:
-## Module 'structures':
-### pdb_model:
-This is the main base class that should be accessible to the user. Essentially,
-it will be used for reading PDB files and storing the necessary information for
-visualization: an array of chains, the file path, the file type, and possibly
-something else. For now, I don’t have any grand plans.
-### _chain
-This should be a private class that stores information about the chains in the
-pdb model: indices, residues, secondary structure, etc.
-## Module 'dssp':
-### dssp:
-Essentially, it just runs the DSSP program and processes the output for further handling.
-## Module 'visualization':
-### visualization:
-Currently, the file contains only a small number of functions that conveniently generate
-images of a specific chain or the entire file
-### Canvas:
-A new class has been added in the current commit. It is responsible for generating the image.
-In the program's code, an 'image' consists of three elements: Title, DrawArea, and Legend.
-Why was this approach taken? In my opinion, creating an image as a single, monolithic entity
-is much more complex than generating it from separate components. This approach also allows for
-the dynamic addition and/or removal of objects even after the image has been generated and/or saved.
-So far, out of the three elements, only the core part—DrawArea—has been implemented.
-Therefore, I will now focus on discussing it in more detail.
-#### DrawArea:
-DrawArea is also not a monolithic object. Essentially, it serves as a dynamic storage for chains.
-This means we can easily add and, in theory, remove sequences before generating the image.
-DrawArea stores objects of the Chain class from the visualisation module
-#### Chain:
-Objects of the Chain class also serve only as storage for objects of the Shapes class.
-Essentially, this results in the following data structure: a list of objects inside an object inside a list of objects.
+# Struct Draw
 
-Why was this approach taken?
-I chose this structure to allow the use of relative coordinates for Shapes within a Chain,
-while also avoiding the need to immediately assign fixed coordinates to Chains within DrawArea.
+**Struct Draw** is a Python package for generating plots and visualizations of protein secondary structure based on the output of algorithms such as DSSP and Stride.
 
-What are the advantages of this approach?
-As I mentioned earlier, we don’t need to manually calculate and assign coordinates for each chain,
-nor do we need to determine the exact size of DrawArea beforehand—the program takes care of all
-calculations and displays everything correctly. This effectively turns the system into a sort of constructor.
+## Table of Contents
 
-Additionally, since coordinates are not hardcoded, we could, in theory, implement filters for sequence display,
-such as sorting by increasing or decreasing length. Another major benefit is extensibility. It becomes significantly
-easier to add new types of objects or Shapes. The existing functionality already works, and any
-modifications will require only minor adjustments rather than a complete rewrite of the system.
-### How to use
-```
+- [Description](#description)  
+- [Features](#features)  
+- [Installation](#installation)  
+- [Usage](#usage)   
+- [License](#license)
+- [Dependencies](#dependencies)  
+
+## Description
+
+**Struct Draw** makes it easy to visualize protein secondary structure elements α‑helices, β‑sheets, turns, etc.—by parsing the output of common annotation tools (DSSP, Stride) and rendering figures.
+
+## Features
+
+- **PDB/PDBx support** — parse and visualize raw PDB or PDBx/mmCIF files.  
+- **DSSP & Stride compatibility** — read canonical DSSP and Stride output (with optional limited coloring).  
+- **2D secondary‑structure plots** — display helices, sheets, and other elements in PNG.  
+- **Palette flexibility** — choose from built‑in color schemes or supply your own custom palettes.  
+- **Intuitive API** — a simple, Pythonic interface for building and customizing plots.  
+- **Extensible architecture** — plug in your own parsing algorithms or coloring modes seamlessly.
+- **Alignment support** — visualize and compare sequence or structural alignments alongside secondary‑structure plots.  
+
+## Installation
+
+```bash
+git clone https://github.com/YOUR_USERNAME/StructDraw.git
+cd StructDraw
 pip install -e .
-./demo_run.py -pdb {pdb_file}`
 ```
-For now, everything is colored in the standard way, depending on the structure.
+
+## Usage
+### PDB files
+```python
+#!/usr/bin/env python3
+
+from struct_draw.structures.pdb_model import PDB, PDBx
+from struct_draw.plotter import Chain, Canvas
+
+data_dir = 'data/'
+
+pdb_file = data_dir + '1ad0.pdb'
+predicted_pdb_file = data_dir + '1ad0_predicted.cif'
+
+canvas = Canvas('white')
+canvas.add_title('DejaVuSans.ttf', 50, 'True and Predicted Chains Comparison', 'centered')
+
+pdb_model = PDB('mkdssp', pdb_file)
+chain_A = pdb_model.get_chain('A')
+canvas.add_chain(Chain(chain_A,
+                       shape_size=50,
+                       split=80,
+                       color_mode='b_factor',
+                       color_sub_mode='mean'))
+
+predicted_model = PDBx('mkdssp', predicted_pdb_file)
+predicted_chain_A = predicted_model.get_chain('A')
+canvas.add_chain(Chain(predicted_chain_A,
+                       shape_size=50,
+                       split=80,
+                       color_mode='b_factor',
+                       color_sub_mode='a_fold'))
+
+img = canvas.get_image()
+img.save('output_image.png')
+img.show()
 ```
-structures = {'H': 'helix',
-               'I': 'helix',
-               'G': 'helix',
-               'P': 'helix',
-               'B': 'strand',
-               'E': 'strand',
-               'T': 'other',
-               'S': 'other'}
-				  
-structure_colors = {'helix': 'green',
-                    'strand':'blue',
-                    'other': 'white'}
+![Usage Script Reult](https://github.com/https://github.com/Wolchear/StructDraw/main/usage_example/output_image.png)
+
+### Alignment
+
+```python
+#!/usr/bin/env python3
+
+from struct_draw.structures.alignment import Alignment
+from struct_draw.plotter import Chain, Canvas
+
+alignment = 'alignment_data/light.afa'
+pdb_files_dir = 'alignment_data/pdb_files'
+new_alignment = Alignment(alignment, pdb_files_dir, 'mkdssp')
+canvas = Canvas('white')
+canvas.add_title('DejaVuSans.ttf', 50, 'Alignment With Custom Palette', 'centered')
+NEW_PALETTE = {'helix': 'red',
+               'strand': 'green',
+               'other': 'grey',
+               'gap': 'black'}
+for model in new_alignment.models:
+    for chain in model.get_chain_list():
+        chain_to_add = model.get_chain(chain)
+        canvas.add_chain(Chain(chain_to_add,
+                               shape_size=50,
+                               split=80,
+                               color_mode='structure',
+                               color_sub_mode='secondary',
+                               custom_palette=NEW_PALETTE))
+    
+img = canvas.get_image()
+img.save('alignment_output_image.png')
+img.show()
 ```
+![Alignment Usage Script Reult](https://github.com/https://github.com/Wolchear/StructDraw/main/usage_example/alignment_output_image.png)
+
+## Dependencies
+
+- Python ≥ 3.10  
+- numpy ≥ 1.26.1,<2.0  
+- Pillow ≥ 11.1.0,<12.0  
+
+> **Note:** Struct Draw was developed and tested on the versions listed above.  
+> It has not been tested on earlier versions, so compatibility with lower versions is not guaranteed.
+
+## License
+
+This project is licensed under the [BSD‑3‑Clause License](https://opensource.org/licenses/BSD-3-Clause).
+
