@@ -69,7 +69,7 @@ img = canvas.get_image()
 img.save('output_image.png')
 img.show()
 ```
-![Usage Script Reult](https://github.com/Wolchear/StructDraw/main/usage_example/output_image.png)
+![Usage Script Reult](usage_example/output_image.png)
 
 ### Alignment
 
@@ -102,7 +102,7 @@ img = canvas.get_image()
 img.save('alignment_output_image.png')
 img.show()
 ```
-![Alignment Usage Script Reult](https://github.com/Wolchear/StructDraw/main/usage_example/alignment_output_image.png)
+![Alignment Usage Script Reult](usage_example/alignment_output_image.png)
 
 ## Dependencies
 
