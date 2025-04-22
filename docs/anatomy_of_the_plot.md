@@ -17,6 +17,7 @@ If you ever decide to dive deeper into the source code of this project, especial
 
 The **Canvas** is essentially the base layer — the field onto which all other components of the plot are stacked.
 You can think of it as a kind of glue: it doesn't do much by itself, but without it, everything would fall apart. It holds the entire structure together and provides the surface for rendering all visual elements.
+
 The Canvas contains two main components:
 - **Title** – Just plot's title, nothing special.
 - **DrawArea** – as you can see on the picture, the DrawArea is responsible for storing all the added chains and managing their alignment relative to one another. 
@@ -31,6 +32,7 @@ If the Canvas is the glue, then the Chain is the building block — the core uni
 Each **Chain** is not a monolithic object either — just like the Canvas, it consists of two main subcomponents:
 - **ChainAnnotationArea**
 - **ChainShapesArea**
+
 Both are responsible for managing specific types of data.
 
 ### ChainAnnotationArea
