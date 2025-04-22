@@ -4,6 +4,20 @@ from .chain_base_area import BaseArea
 from struct_draw.visualization.small_units.label import RegularLabel
 
 class AnnotationArea(BaseArea):
+    """
+    AnnotationArea handles the layout and rendering size calculation for chain annotation labels.
+
+    Attributes:
+        _chain (Chain): The chain object containing attributes to annotate.
+        _chain_annotation (Dict[str, bool]): A mapping of attribute names to booleans indicating whether to include the annotation.
+        _font_size (int): Font size used for label rendering.
+        _labels_storage (List[RegularLabel]): Generated labels based on chain_annotation.
+        
+    Args:
+        chain (Chain): The chain whose attributes will be annotated.
+        chain_annotation (Dict[str, bool]): Dictionary mapping attribute names to a flag indicating inclusion.
+        font_size (int): Font size to use when rendering labels.
+    """
     def __init__(self, chain: 'Chain', chain_annotation: Dict[str, bool], font_size: int):
         self._chain = chain
         self._chain_annotation = chain_annotation
@@ -22,6 +36,16 @@ class AnnotationArea(BaseArea):
     
     
     def _generate_labels(self) -> RegularLabel:
+        """
+        Generate RegularLabel instances for each attribute flagged in chain_annotation.
+
+        Iterates over sorted keys of chain_annotation, includes only those set to True.
+        Retrieves the attribute value from the chain, defaults to 'N/A' if missing.
+        Constructs label text as "<key>: <value>" and creates a RegularLabel.
+
+        Returns:
+            List[RegularLabel]: List of generated label objects for rendering.
+        """
         labels = []
         for key in sorted(self._chain_annotation.keys()):
             if self._chain_annotation[key]:
@@ -34,6 +58,13 @@ class AnnotationArea(BaseArea):
         
     
     def draw(self, draw_context: 'ImageDraw.ImageDraw', y_offset: int):
+        """
+        Draws all chain labels.
+
+        Args:
+            draw_context (ImageDraw.ImageDraw): The PIL drawing context.
+            y_offset (int): Vertical offset to start drawing.
+        """
         offset = y_offset
         padding = int(self._font_size * 0.5)
         for label in self._labels_storage:

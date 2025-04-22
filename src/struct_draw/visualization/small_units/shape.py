@@ -8,12 +8,26 @@ from .label import RegularLabel
 
 @dataclass
 class BaseShape(ABC):
+    """
+    Abstract base class for drawable shapes representing residues.
+
+    Attributes:
+        _residue (object): Object containing residue information, including amino_acid.
+        _size (int): Size of the shape in pixels.
+        _color (str): Fill color of the shape (hex string or color name).
+        _show_amino_code (bool): Flag to display the one-letter amino acid code.
+        _pos_in_structure (str): Position identifier within a larger structure.
+        _amino_label (RegularLabel): Label object for amino acid code (initialized if needed).
+        _font_size (int): Font size for the amino acid label (calculated automatically).
+        _font (str): Path to the font file used for label rendering.
+        _font_color (str): Color of the font for the amino label (calculated for contrast).
+    """
     _residue: object
     _size: int
     _color: str
     _show_amino_code: bool
     _pos_in_structure: str
-    _amino_label: object = field(init=False)
+    _amino_label: RegularLabel = field(init=False)
     _font_size: int = field(init=False)
     _font: str = field(default='DejaVuSans.ttf')
     _font_color: str = field(init=False)
@@ -23,6 +37,12 @@ class BaseShape(ABC):
         return self._size
     
     def __post_init__(self) -> None:
+        """
+        Post-initialization to prepare the amino acid label if requested:
+        - Calculates a contrasting font color against the shape's fill color.
+        - Determines font size as a fraction of the shape size.
+        - Generates the RegularLabel for the amino acid code.
+        """
         if self._show_amino_code:
             self._font_color = self.get_contrast_color(self._color)
             self._font_size =  self._size * 0.4
@@ -31,11 +51,14 @@ class BaseShape(ABC):
     
     def get_contrast_color(self, bg_color: str, threshold: int = 128) -> str:
         """
-        Retuns '#FFFF99' if bg_color is dark
-        Returns '#000000' if bg_color is light.
-        bg_color:
-          - #RRGGBB' or
-          - Color name (ex.: white, red, blue,...)
+        Determines a contrasting font color based on background brightness.
+
+        Args:
+            bg_color (str): Background color as '#RRGGBB' or standard color name.
+            threshold (int): Luminance threshold (0-255) to switch contrast.
+
+        Returns:
+            str: '#FFFF99' if background is dark, '#000000' if light.
         """
         r, g, b = ImageColor.getrgb(bg_color)
         luminance = 0.299*r + 0.587*g + 0.114*b
@@ -46,12 +69,22 @@ class BaseShape(ABC):
         return RegularLabel(self._residue.amino_acid, self._font_size, self._font, self._font_color)
     
     def draw(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
-        self._draw_self(x_0, y_0, draw_context)
+        """
+        Draws the shape and optionally centers the amino acid code label within it.
+
+        Args:
+            x_0 (int): X-coordinate of the top-left corner for drawing the shape.
+            y_0 (int): Y-coordinate of the top-left corner for drawing the shape.
+            draw_context (ImageDraw.ImageDraw): The PIL ImageDraw drawing context.
+        """
+        self._draw_self(x_0, y_0, draw_context) # Draw the spicific shape (Strand, Helix, Other or Gap)
         amino_label_x_0 = x_0 + int(self._size * 0.5)
         if self._show_amino_code:
+            # Center the label inside the shape
             amino_label_x_0 = x_0 + (self._size - self._amino_label.width) // 2
             amino_label_y_0 = y_0 + (self._size - self._amino_label.height) // 2
             
+            # Adjust for font offse
             adjusted_x = amino_label_x_0 - self._amino_label._offset_x
             adjusted_y = amino_label_y_0 - self._amino_label._offset_y
             
@@ -60,6 +93,14 @@ class BaseShape(ABC):
         
     @abstractmethod
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
+        """
+        Abstract method to draw the specific shape form onto the provided context.
+
+        Args:
+            x_0 (int): X-coordinate of the top-left corner for drawing.
+            y_0 (int): Y-coordinate of the top-left corner for drawing.
+            draw_context (ImageDraw.ImageDraw): The PIL ImageDraw drawing context.
+        """
         pass
 
             

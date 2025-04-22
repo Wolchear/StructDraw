@@ -10,7 +10,28 @@ import numpy as np
 from struct_draw.apps.interface import get_algorithm
 
 class BaseModel(ABC):
+    """
+    Abstract base class for running structural analysis algorithms (e.g., DSSP) on PDB files
+    and converting the output into Chain objects.
+
+    Attributes:
+        _algorithm_name (str): Name of the algorithm to run (e.g., 'dssp').
+        _pdb_file (Optional[str]): Path to the PDB file to analyze.
+        _include_only (Optional[list]): List of chain IDs to include in the output; None means all.
+        _algorithm (Object): Instance of the algorithm handler obtained via get_algorithm.
+        _algorithm_out (str): Raw output from the algorithm run or provided path to processed data.
+        _chains (dict): Mapping of chain IDs to Chain instances created from algorithm data.
+    """
     def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
+        """
+        Initialize the BaseModel with algorithm settings and process the structural data.
+
+        Args:
+            algorithm_name (str): Identifier for the structural analysis algorithm.
+            pdb_file (Optional[str]): Path to the input PDB file.
+            include_only (Optional[list]): Chain IDs to include in final output.
+            algorithm_out (Optional[str]): Precomputed algorithm output path or data.
+        """
         self._pdb_file = pdb_file
         self._include_only = include_only
         self._algorithm_name = algorithm_name
@@ -20,6 +41,18 @@ class BaseModel(ABC):
         
         
     def get_chain(self, chain_id: str):
+        """
+        Retrieve a specific Chain instance by its ID.
+
+        Args:
+            chain_id (str): Identifier of the chain to retrieve.
+
+        Returns:
+            Chain: The Chain object corresponding to the ID.
+
+        Raises:
+            ValueError: If the requested chain ID is not found.
+        """
         if chain_id not in self._chains:
             raise ValueError(f"File does not contain chain: {chain_id}")
         return self._chains[chain_id]
@@ -31,6 +64,18 @@ class BaseModel(ABC):
         return self._algorithm.run(self._pdb_file)
                                             
     def process_algorithm_data(self) -> dict:
+        """
+        Parse the algorithm output and construct Chain objects for each chain.
+
+        Process:
+            1. Load algorithm data into a DataFrame (expects 'chain_id' column).
+            2. Identify unique chain IDs.
+            3. Filter by include_only if set.
+            4. Create a Chain object for each chain present.
+
+        Returns:
+            dict: Mapping from chain IDs to Chain instances.
+        """
         dssp_data = self._algorithm.process_data(self._algorithm_out)
         unique_chains = np.unique(dssp_data['chain_id'])
         chains = {}
@@ -46,6 +91,11 @@ class BaseModel(ABC):
     
     @abstractmethod   
     def parse_b_factor(self) -> None:
+        """
+        Abstract method to parse or process B-factor values for residues.
+
+        Implementations should populate or modify feature data related to residue flexibility.
+        """
         pass
 
 class PDBx(BaseModel):
