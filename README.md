@@ -10,7 +10,7 @@
 - [Usage](#usage)   
 - [License](#license)
 - [Dependencies](#dependencies)  
-
+- [Citation](#citation)
 ## Description
 
 **Struct Draw** makes it easy to visualize protein secondary structure elements α‑helices, β‑sheets, turns, etc.—by parsing the output of common annotation tools (DSSP, Stride) and rendering figures.
@@ -117,3 +117,6 @@ img.show()
 
 This project is licensed under the [BSD‑3‑Clause License](https://opensource.org/licenses/BSD-3-Clause).
 
+## Citation
+Stride: Frishman D & Argos P (1995) Knowledge-based protein secondary structure assignment. Proteins 23: 566–579 Available at: http://dx.doi.org/10.1002/prot.340230412
+DSSP: Kabsch W & Sander C (1983) DSSP: definition of secondary structure of proteins given a set of 3D coordinates. Biopolymers 22: 2577–2637
