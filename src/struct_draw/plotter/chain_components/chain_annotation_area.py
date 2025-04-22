@@ -3,6 +3,7 @@ from typing import Optional, Dict
 from .chain_base_area import BaseArea
 from struct_draw.plotter.small_units.label import RegularLabel
 
+
 class AnnotationArea(BaseArea):
     """
     AnnotationArea handles the layout and rendering size calculation for chain annotation labels.
@@ -18,9 +19,12 @@ class AnnotationArea(BaseArea):
         chain_annotation (Dict[str, bool]): Dictionary mapping attribute names to a flag indicating inclusion.
         font_size (int): Font size to use when rendering labels.
     """
-    def __init__(self, chain: 'Chain', chain_annotation: Dict[str, bool], font_size: int):
+    CHAIN_DEFAULT_ANNOTATION = {'chain_id': True,
+                                'algorithm': False,
+                                'model_id': True}
+    def __init__(self, chain: 'Chain', chain_annotation: Optional[Dict[str, bool]], font_size: int):
         self._chain = chain
-        self._chain_annotation = chain_annotation
+        self._chain_annotation = chain_annotation or self.CHAIN_DEFAULT_ANNOTATION
         self._font_size = font_size
         self._labels_storage = self._generate_labels()
     

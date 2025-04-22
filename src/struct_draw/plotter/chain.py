@@ -4,10 +4,6 @@ import numpy as np
 
 from struct_draw.plotter.chain_components import ShapesArea, AnnotationArea
 
-CHAIN_DEFAULT_ANNOTATION = {'chain_id': True,
-                            'algorithm': False,
-                            'model_id': True}
-
 class Chain:
     """
     Orchestrates the visualization of a molecular chain by combining an annotation area and a shapes area.
@@ -30,7 +26,7 @@ class Chain:
         custom_palette (Optional[Dict[str, str]]): Mapping of categories to custom colors.
     """
     def __init__(self, chain: 'Chain', shape_size: int, show_amino_code: bool = True, split: Optional[int] = None,
-                 start: int = 0, end: Optional[int] = None, chain_annotation: Dict[str, bool] = CHAIN_DEFAULT_ANNOTATION,
+                 start: int = 0, end: Optional[int] = None, chain_annotation: Dict[str, bool] = None,
                  color_mode: str = 'structure', color_sub_mode: str = 'secondary', custom_palette: Optional[Dict[str, str]] = None):
         self.__chain = chain
         self.__shape_size = shape_size
