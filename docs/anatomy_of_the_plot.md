@@ -14,6 +14,7 @@ If you ever decide to dive deeper into the source code of this project, especial
 
 ## Canvas
 ![Canvas](images/Canvas.png)
+
 The **Canvas** is essentially the base layer — the field onto which all other components of the plot are stacked.
 You can think of it as a kind of glue: it doesn't do much by itself, but without it, everything would fall apart. It holds the entire structure together and provides the surface for rendering all visual elements.
 The Canvas contains two main components:
@@ -23,6 +24,7 @@ The Canvas contains two main components:
   
 ## Chain
 ![Chain](images/Chain.png)
+
 Now we move on to the second major object responsible for the visualization: the **Chain**.
 If the Canvas is the glue, then the Chain is the building block — the core unit that we stack and arrange to form a complete plot.
 
@@ -35,6 +37,7 @@ Both are responsible for managing specific types of data.
 
 **ChainAnnotationArea** stores metadata about the chain — such as `model_id`, `algorithm`, and `chain_id`. This information is displayed as labels to the **left** of the ChainShapesArea.
 You might wonder whether long labels could cause layout issues — don’t worry! The **DrawArea** keeps track of label widths and automatically aligns all Chains so that their graphical parts stay perfectly level, regardless of annotation length. (Check attached image)
+
 ![DrawAreaIsWorking](images/plot_alignment_example.png)
 
 ### ChainShapesArea
