@@ -267,6 +267,7 @@ new_alignment = Alignment(alignment, pdb_files_dir, 'mkdssp')
 > Note 📌:
 > 
 > To read alignments correctly, all hashers must be in a specific format: pdb_file_id|pdb_file_type|chain_id
+> 
 > For example 1ad0|pdb|A
 > 
 
