@@ -264,6 +264,12 @@ You need to provide three parameters in this order:
 new_alignment = Alignment(alignment, pdb_files_dir, 'mkdssp')
 ```
 
+> Note 📌:
+> 
+> To read alignments correctly, all hashers must be in a specific format: pdb_file_id|pdb_file_type|chain_id
+> For example 1ad0|pdb|A
+> 
+
 ### Stage 3: Chain Extraction
 Once the Alignment object is created, you can iterate over its models and chains just like before.
 ```python
