@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from struct_draw.structures.pdb_model import PDB, PDBx
 from struct_draw.plotter import Chain, Canvas
 

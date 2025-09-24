@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools >= 64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "struct_draw"
+version = "0.1.0"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [ { name = "Wolchear" } ]
+requires-python = ">= 3.10"
+dependencies = [
+    "numpy>=2.0,<3.0",
+    "Pillow>=11.1.0,<12.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["struct_draw*"]
