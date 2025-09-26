@@ -85,7 +85,7 @@ class BaseModel(ABC):
             chain_data = dssp_data[dssp_data['chain_id'] == chain_id]
             pdb_id = None
             if self._pdb_file is not None:
-            	pdb_id = os.path.splitext(os.path.basename(self._pdb_file))[0]
+                pdb_id = os.path.splitext(os.path.basename(self._pdb_file))[0]
             chains[chain_id] = Chain(chain_id, self._algorithm_name, pdb_id, chain_data)
         return chains
     

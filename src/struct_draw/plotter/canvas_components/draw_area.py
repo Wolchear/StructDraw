@@ -13,8 +13,8 @@ class DrawArea(BaseCanvasComponent):
         self._width = max((chain.width for chain in self.__chains_storage), default=0)
         
     def draw(self, draw_context: 'ImageDraw.ImageDraw', offset: int) -> None:
-    	y_offset = offset
-    	x_offset = max((chain.annotation_area.width for chain in self.__chains_storage), default=0)
-    	for chain in self.__chains_storage:
-    		chain.draw(draw_context, y_offset, x_offset)
-    		y_offset += chain.height
+        y_offset = offset
+        x_offset = max((chain.annotation_area.width for chain in self.__chains_storage), default=0)
+        for chain in self.__chains_storage:
+            chain.draw(draw_context, y_offset, x_offset)
+            y_offset += chain.height
