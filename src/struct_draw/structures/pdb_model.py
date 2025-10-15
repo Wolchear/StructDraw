@@ -7,7 +7,7 @@ import re
 
 import numpy as np
 
-from struct_draw.apps.interface import get_algorithm
+from struct_draw.algorithms.interface import get_algorithm
 
 class BaseModel(ABC):
     """

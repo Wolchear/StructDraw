@@ -1,6 +1,6 @@
 import pytest
 
-from struct_draw.apps.algorithms import DSSP
+from struct_draw.algorithms.algorithms import DSSP
 
 
 @pytest.fixture(scope="session")

@@ -3,7 +3,7 @@ import importlib
 
 import pytest
 
-from struct_draw.apps.algorithms import DSSP, Stride
+from struct_draw.algorithms.algorithms import DSSP, Stride
 
 @pytest.fixture(scope='session')
 def make_module():
