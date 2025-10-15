@@ -27,10 +27,10 @@ class BaseShape(ABC):
     _color: str
     _show_amino_code: bool
     _pos_in_structure: str
-    _amino_label: RegularLabel = field(init=False)
-    _font_size: int = field(init=False)
+    _amino_label: RegularLabel = field(init=False, default=None)
+    _font_size: int = field(init=False, default=None)
     _font: str = field(default='DejaVuSans.ttf')
-    _font_color: str = field(init=False)
+    _font_color: str = field(init=False, default=None)
 
     @property
     def height(self):   
