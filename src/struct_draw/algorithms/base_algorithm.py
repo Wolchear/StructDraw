@@ -22,6 +22,9 @@ class BaseAlgorithm(ABC):
         self._algorithm_sub_name = algorithm_sub_name
         self.SS_TRANSLATION = ss_translation
 	
+    def __str__(self):
+        return self._algorithm_sub_name
+    
     @abstractmethod	
     def run(self, pdb_file: str) -> str:
         """

@@ -7,35 +7,34 @@ import re
 
 import numpy as np
 
-from struct_draw.algorithms.interface import get_algorithm
-
 class BaseModel(ABC):
     """
     Abstract base class for running structural analysis algorithms (e.g., DSSP) on PDB files
     and converting the output into Chain objects.
 
     Attributes:
-        _algorithm_name (str): Name of the algorithm to run (e.g., 'dssp').
         _pdb_file (Optional[str]): Path to the PDB file to analyze.
         _include_only (Optional[list]): List of chain IDs to include in the output; None means all.
         _algorithm (Object): Instance of the algorithm handler obtained via get_algorithm.
         _algorithm_out (str): Raw output from the algorithm run or provided path to processed data.
         _chains (dict): Mapping of chain IDs to Chain instances created from algorithm data.
     """
-    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
+    def __init__(
+        self, algorithm, pdb_file: Optional[str] = None,
+        include_only: Optional[list] = None, algorithm_out: Optional[str] = None
+        ):
         """
         Initialize the BaseModel with algorithm settings and process the structural data.
 
         Args:
-            algorithm_name (str): Identifier for the structural analysis algorithm.
+            algorithm (object): Algorithm object.
             pdb_file (Optional[str]): Path to the input PDB file.
             include_only (Optional[list]): Chain IDs to include in final output.
             algorithm_out (Optional[str]): Precomputed algorithm output path or data.
         """
         self._pdb_file = pdb_file
         self._include_only = include_only
-        self._algorithm_name = algorithm_name
-        self._algorithm = get_algorithm(algorithm_name)
+        self._algorithm = algorithm
         self._algorithm_out = algorithm_out if algorithm_out is not None else self.run_algorithm()
         self._chains = self.process_algorithm_data()
         
@@ -86,7 +85,7 @@ class BaseModel(ABC):
             pdb_id = None
             if self._pdb_file is not None:
                 pdb_id = os.path.splitext(os.path.basename(self._pdb_file))[0]
-            chains[chain_id] = Chain(chain_id, self._algorithm_name, pdb_id, chain_data)
+            chains[chain_id] = Chain(chain_id, str(self._algorithm), pdb_id, chain_data)
         return chains
     
     @abstractmethod   
@@ -99,8 +98,8 @@ class BaseModel(ABC):
         pass
 
 class PDBx(BaseModel):
-    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
-        super().__init__(algorithm_name, pdb_file, include_only, algorithm_out)
+    def __init__(self, algorithm: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
+        super().__init__(algorithm, pdb_file, include_only, algorithm_out)
         if self._pdb_file is not None:
             self.parse_b_factor()
             
@@ -151,8 +150,8 @@ class PDBx(BaseModel):
         
         
 class PDB(BaseModel):   
-    def __init__(self, algorithm_name: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
-        super().__init__(algorithm_name, pdb_file, include_only, algorithm_out)
+    def __init__(self, algorithm: str, pdb_file: Optional[str] = None, include_only: Optional[list] = None, algorithm_out: Optional[str] = None):
+        super().__init__(algorithm, pdb_file, include_only, algorithm_out)
         if self._pdb_file is not None:
             self.parse_b_factor()
     

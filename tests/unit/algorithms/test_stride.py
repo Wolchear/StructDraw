@@ -1,6 +1,6 @@
 import pytest
 
-from struct_draw.algorithms.algorithms import Stride
+from struct_draw.algorithms import Stride
 
 
 @pytest.fixture(scope="session")

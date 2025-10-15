@@ -1,1 +1,2 @@
-from .interface import get_algorithm
+from .dssp import DSSP
+from .stride import Stride

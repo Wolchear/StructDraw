@@ -38,7 +38,7 @@ AMINO_ACIDS = { "ALA": "A",
 
 
 class Stride(BaseAlgorithm):
-    def __init__(self, algorithm_sub_name: str, ss_translation: Optional[Dict[str,str]]):
+    def __init__(self, algorithm_sub_name: str, ss_translation: Optional[Dict[str,str]] = None):
         super().__init__(algorithm_sub_name, ss_translation)
         if self.SS_TRANSLATION is None:
             self.SS_TRANSLATION = DEFAULT_SS_TRANSLATION
