@@ -1,9 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Dict, Optional
 from abc import ABC, abstractmethod
 from math import ceil
+from functools import lru_cache
 
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+import numpy as np
+
 from .label import RegularLabel
 
 @dataclass
@@ -105,87 +107,121 @@ class BaseShape(ABC):
 
             
 @dataclass        
-class Other(BaseShape):    
+class Other(BaseShape):
+    @staticmethod
+    def _get_points_coficients(pos: str, size: int) -> np.ndarray:
+        return np.array([
+            (0.0, 0.3),
+            (1.0, 0.7)
+        ], dtype=np.float32) * size
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
-        fixed_y_0 = y_0 + int(self._size * 0.3)
-        fixed_y_1 = y_0 + int(self._size * 0.7)
-        x_1 = x_0 + self._size
-        y_1 = y_0 + self._size
+        points = self._get_points_coficients(self._pos_in_structure, self._size)
+        points[:, 0] += x_0        
+        points[:, 1] += y_0
         outline_width = ceil(self._size * 0.03)
-        draw_context.rectangle([x_0, fixed_y_0 , x_1, fixed_y_1],
+        draw_context.rectangle([tuple(p) for p in points.tolist()],
                                 fill=self._color, outline='black', width=outline_width)
         
      
 @dataclass
 class Helix(BaseShape):
+    @staticmethod
+    def _get_points_coficients(pos: str, size: int) -> np.ndarray:
+        if pos == 'first':
+            pts = [
+                (0.0, 0.3), # A
+                (0.4, 0.3), # B
+                (0.6, 0.1), # C
+                (1.0, 0.1), # D
+                (1.0, 0.5), # E
+                (0.8, 0.5), # F
+                (0.6, 0.7), # G
+                (0.0, 0.7), # H
+            ]
+        elif pos == 'inner':
+            pts = [
+                (0.0, 0.1),  # A
+                (0.2, 0.1),  # B
+                (0.4, 0.25), # C
+                (0.6, 0.25), # D
+                (0.8, 0.1),  # E
+                (1.0, 0.1),  # F
+                (1.0, 0.5),  # G
+                (0.8, 0.5),  # H
+                (0.7, 0.7),  # K
+                (0.3, 0.7),  # L
+                (0.2, 0.5),  # M
+                (0.0, 0.5),  # N
+            ]
+        elif pos == 'last':
+            pts = [
+                (0.0, 0.1), # A
+                (0.5, 0.1), # B
+                (0.7, 0.3), # C
+                (1.0, 0.3), # D
+                (1.0, 0.7), # E
+                (0.4, 0.7), # F
+                (0.2, 0.5), # G
+                (0.0, 0.5), # H
+            ]
+        else:
+            raise ValueError(f"Unknown pos: {pos}")
+        float_points =  np.array(pts, dtype=np.float32) * size
+        return np.rint(float_points).astype(np.int32)
+        
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
-        points = []
-        x_1 = x_0 + self._size
-        y_1 = y_0 + self._size
+        points = self._get_points_coficients(self._pos_in_structure, self._size) 
         outline_width = ceil(self._size * 0.05)
-        if self._pos_in_structure == 'first':
-            points = [ (x_0,                         y_0 + int(self._size * 0.3)), # A
-                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.3)), # B
-                       (x_0 + int(self._size * 0.6), y_0 + int(self._size * 0.1)), # C
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.1)), # D
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.5)), # E
-                       (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.5)), # F
-                       (x_0 + int(self._size * 0.6), y_0 + int(self._size * 0.7)), # G
-                       (x_0,                         y_0 + int(self._size * 0.7))] # H
-        elif self._pos_in_structure == 'inner':
-            points = [ (x_0,                         y_0 + int(self._size * 0.1)), # A
-                       (x_0 + int(self._size * 0.2), y_0 + int(self._size * 0.1)), # B
-                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.25)),# C
-                       (x_0 + int(self._size * 0.6), y_0 + int(self._size * 0.25)),# D
-                       (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.1)), # E
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.1)), # F
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.5)), # G
-                       (x_0 + int(self._size * 0.8), y_0 + int(self._size * 0.5)), # H
-                       (x_0 + int(self._size * 0.7), y_0 + int(self._size * 0.7)), # K
-                       (x_0 + int(self._size * 0.3), y_0 + int(self._size * 0.7)), # L
-                       (x_0 + int(self._size * 0.2), y_0 + int(self._size * 0.5)), # M
-                       (x_0,                         y_0 + int(self._size * 0.5))] # N
-        elif self._pos_in_structure == 'last':
-            points = [ (x_0,                         y_0 + int(self._size * 0.1)), # A
-                       (x_0 + int(self._size * 0.5), y_0 + int(self._size * 0.1)), # B
-                       (x_0 + int(self._size * 0.7), y_0 + int(self._size * 0.3)), # C
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.3)), # D
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.7)), # E
-                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.7)), # F
-                       (x_0 + int(self._size * 0.2), y_0 + int(self._size * 0.5)), # G
-                       (x_0,                         y_0 + int(self._size * 0.5))] # H
-                       
-                  
-        draw_context.polygon(points, outline="black", fill=self._color, width=outline_width)
+        points[:, 0] += x_0        
+        points[:, 1] += y_0
+        draw_context.polygon([tuple(p) for p in points.tolist()], outline="black", fill=self._color, width=outline_width)
 
 @dataclass
 class Strand(BaseShape):
+    @staticmethod
+    def _get_points_coficients(pos: str, size: int) -> np.ndarray:
+        if pos == 'first' or pos == 'inner':
+            pts = [
+                (0.0, 0.2),
+                (1.0, 0.8)
+            ]
+        elif pos == 'last':
+            pts = [
+                (0.0, 0.2), # A
+                (0.4, 0.2), # B
+                (0.4, 0.0), # C
+                (1.0, 0.5), # D
+                (0.4, 1.0), # E
+                (0.4, 0.8), # F
+                (0.0, 0.8)  # G
+            ]
+        else:
+            raise ValueError(f"Unknown pos: {pos}")    
+        float_points =  np.array(pts, dtype=np.float32) * size
+        return np.rint(float_points).astype(np.int32)
+    
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         outline_width = ceil(self._size * 0.05)
-        if self._pos_in_structure == 'first' or self._pos_in_structure == 'inner':
-            x_1 = x_0 + self._size
-            fixed_y_0 = y_0 + int(self._size * 0.2)
-            fixed_y_1 = y_0 + int(self._size * 0.8)
-            draw_context.rectangle([x_0, fixed_y_0 , x_1, fixed_y_1],
-                                fill=self._color, outline='black', width=outline_width)
+        points=self._get_points_coficients(self._pos_in_structure, self._size)
+        points[:, 0] += x_0        
+        points[:, 1] += y_0
+        if self._pos_in_structure in ('first', 'inner'):
+            draw_context.rectangle([tuple(p) for p in points.tolist()], fill=self._color, outline='black', width=outline_width)
         else:
-            points = [ (x_0,                         y_0 + int(self._size * 0.2)), # A
-                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.2)), # B
-                       (x_0 + int(self._size * 0.4), y_0),                         # C
-                       (x_0 + int(self._size),       y_0 + int(self._size * 0.5)), # D
-                       (x_0 + int(self._size * 0.4), y_0 + self._size),            # E
-                       (x_0 + int(self._size * 0.4), y_0 + int(self._size * 0.8)), # F
-                       (x_0,                         y_0 + int(self._size * 0.8))] # G
-            draw_context.polygon(points, outline="black", fill=self._color, width=outline_width)
+            draw_context.polygon([tuple(p) for p in points.tolist()], outline="black", fill=self._color, width=outline_width)
         
         
 @dataclass
 class Gap(BaseShape):
+    def _get_points_coficients(pos: str, size: int) -> np.ndarray:
+        return np.array([
+            (0.1, 0.5),
+            (0.9, 0.5)
+        ], dtype=np.float32) * size
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
-        x_1 = x_0 + self._size
-        y_1 = y_0 + self._size
-        y_0 = y_0 + 0.5 * self._size
-        margin = self._size * 0.1
+        points = self._get_points_coficients(self._pos_in_structure, self._size)
+        points[:, 0] += x_0        
+        points[:, 1] += y_0
         width = ceil(self._size * 0.05)
-        draw_context.line([x_0 + margin, y_0, x_1 - margin, y_0],
+        draw_context.line([tuple(p) for p in points.tolist()],
                                    		fill='black')
