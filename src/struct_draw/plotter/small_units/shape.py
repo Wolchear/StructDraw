@@ -110,10 +110,11 @@ class BaseShape(ABC):
 class Other(BaseShape):
     @staticmethod
     def _get_points_coficients(pos: str, size: int) -> np.ndarray:
-        return np.array([
+        return np.rint(np.array([
             (0.0, 0.3),
             (1.0, 0.7)
-        ], dtype=np.float32) * size
+        ], dtype=np.float32) * size ).astype(np.int32)
+        
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         points = self._get_points_coficients(self._pos_in_structure, self._size)
         points[:, 0] += x_0        
@@ -214,10 +215,11 @@ class Strand(BaseShape):
 @dataclass
 class Gap(BaseShape):
     def _get_points_coficients(pos: str, size: int) -> np.ndarray:
-        return np.array([
+        return  np.rint(np.array([
             (0.1, 0.5),
             (0.9, 0.5)
-        ], dtype=np.float32) * size
+        ], dtype=np.float32) * size).astype(np.int32)
+
     def _draw_self(self, x_0: int, y_0: int, draw_context: 'ImageDraw.ImageDraw') -> None:
         points = self._get_points_coficients(self._pos_in_structure, self._size)
         points[:, 0] += x_0        
