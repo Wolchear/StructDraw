@@ -222,6 +222,5 @@ class Gap(BaseShape):
         points = self._get_points_coficients(self._pos_in_structure, self._size)
         points[:, 0] += x_0        
         points[:, 1] += y_0
-        width = ceil(self._size * 0.05)
         draw_context.line([tuple(p) for p in points.tolist()],
                                    		fill='black')
